@@ -6,11 +6,11 @@ execute:
   echo: true
 
 book:
-  title: "YOUR PROJECT TITLE"
+  title: "An Analysis of Women's Health Trends"
   author:
-    - AUTHOR1 (UNI1)
-    - AUTHOR2 (UNI2)
-  repo-url: https://github.com/YOUR_GITHUB_ACCOUNT/REPO_NAME
+    - Emma DiLauro (eed2167)
+
+  repo-url: https://github.com/emdil99/womens_health
   date: today
   page-footer:
     right: |
