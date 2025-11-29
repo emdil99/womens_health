@@ -1,64 +1,7 @@
-This repo contains a [Quarto book](https://quarto.org/docs/books/) template for the EDAV final project.
+For my final project I am interested in exploring trends in women's health factors. Health and wellness is something I have been passionate about in my free time, and my hope after Columbia is to work in the health and wellness space using data analysis to positively impact others. For the past three years I have worked part time as a group fitness instructor, with the majority of my clients being women. My perception being in the field is that women are becoming increasingly involved with fitness, with boutique studio businesses growing rapidly. I also find that with social media, we see trends of more women discussing their health online. I am curious to dive into the data to see the real story the numbers are telling. Have reported physical activity levels changed? Have nutrition habits changed? Are women in certain areas of the country more concerned with their health than others? Another factor that is of interest to me are fertility issues. If time permits I'd like to dive into some of the data available on miscarriages, hormone treatments, etc and visualize some of the trends there as well.
 
-## Follow these instructions carefully
+I'll be using data from the CDC's National Health and Nutrition Survey (NHANES). The landing page of the survey's data can be found here: https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/default.aspx
 
-*If you have any difficulties or have feedback of any kind, please [file an issue](https://github.com/jtr13/quarto-edav-template/issues) or ask questions in the [Discussions](https://github.com/jtr13/quarto-edav-template/discussions) section.*
+Data is primarily collected through household visits by government personnel. Questionnaires are conducted with those chosen to participate, there is also a mobile examination for the collection of health data.
 
-[Video tutorial](https://www.youtube.com/watch?v=emgS2JI4jCk) (walkthrough of steps below)
-
-### Copy this template (GitHub)
-
-- [ ] 1. Click the green "Use this template" button above and choose "Create a new repository". If you don't see the "Use this template" option, **log in to GitHub**. DO NOT FORK THE REPO. Choose a descriptive name for your repo, such as "federalbudget" or "AIDSdeaths". (If you change your topic before you do any work, delete the repo and start over.)
-
-- [ ] 2. Leave the setting for viewing the repo as "Public". (Otherwise, we will not be able to access your rendered book.)
-
-- [ ] 3. In the Description field, write "Source files for final project" then click "Create repository".
-
-### Set up Pages (GitHub)
-
-- [ ] 1. You've now left the template page and are viewing your new repo on GitHub. On the home page, click Settings. Click the "Pages" section on the left. In the Build and Deployment section, set Source to "Deploy from a branch" (Classic Pages experience) and Branch to main with /docs folder. Click Save.
-
-- [ ] 2. Click the little gear button near "About" on the top right side of the home page of the repo and check the "Use your Github Pages website" box under "Website". Click "Save changes". Test the link and you should see a web site with a stick figure on it. It may take a few minutes to build so if it's not working do a few more steps and then come back to check.
-
-### Copy the repo link (GitHub)
-
-- [ ] 1. Click the green Code button, choose "HTTPS" and copy the link below. It should have the format: https&#xfeff;://github.com/[USERNAME]/[REPONAME].git
-
-### Clone the repo (RStudio)
-
-- [ ] 1. Clone your new repo with *File, New Project..., Version Control, Git* in RStudio. You will need to paste the link from the previous step in the Repository URL box. If it's not automatically populated, enter the repo name in the "Project directory name:" box. Choose the location of the project.
-
-### Edit `_quarto.yml` (RStudio)
-
-Tip: From the file pane in RStudio, open `README.md`, which contains these instructions. You can delete steps as you complete them.
-
-- [ ] 1. Change the all caps info in the `title:`, `author:` and `repo-url` fields in the YAML (top) section of `_quarto.yml` to your info. (Note: it's very important to maintain the indenting structure in this file precisely as is -- be careful!)
-
-### Render the book (RStudio)
-
-- [ ] 1. If you haven't already, click "Help" "Check for Updates" to make sure you have the latest version of RStudio (and thus have Quarto installed.)
-
-- [ ] 2. Render the web site locally by clicking the "Build" tap on the right and then "Render Book".
-
-- [ ] 3. Use `browseURL("docs/index.html")` to view your book locally (or just open `docs/index.html` in a browser).
-
-- [ ] 4. If it looks good, commit and push all changed files to GitHub.
-      
-- [ ] 5. Check that the rendered site looks correct on GitHub and that the links back to GitHub (icon on top left, edit this page / report an issue on right) work properly. Note that there is a delay between the time you push the files and when they show up on your sitel You can check the progress by clicking the Actions tab.
-
-(You will need to repeat steps 2 and 4 every time you wish to update the book on GitHub Pages.)
-
-### Update README (GitHub or RStudio)
-
-- [ ] 1. Delete the content of this **README** and add a short description of your project in its place. If you're working locally, be sure to commit and push the changes to GitHub.
-
-### Optional
-
-- [ ] 1. Choose a theme from [https://bootswatch.com/](https://bootswatch.com/) and replace "cosmo" in `_quarto.yml` with your prefered theme.
-
-### Additional features
-
-Please consult the official guide to **quarto** book websites: [https://quarto.org/docs/books/](https://quarto.org/docs/books/)
-
-
-
+The surveys include continuous data over two year periods. The data files are split out by topic: ie Demographic, Laboratory, and Dietary data files in XPT format. So a portion of the project will involve joining together different datasets in order to get all the information needed for analysis. One reported issue is that fewer Americans are taking the time to fill out these surveys, so results could not be as representative of the population as we hope.
