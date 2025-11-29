@@ -1,5 +1,256 @@
 # Data
 
+
+```{r}
+
+library(haven)
+library(dplyr)
+
+# Load NHANES 2017–2018 data
+demo_13 <- read_xpt("DEMO_13_14.XPT")
+demo_17 <- read_xpt("DEMO_17_18.XPT")
+demo_21 <- read_xpt("DEMO_21_23.XPT")
+
+activity_13 <- read_xpt("PAQ_13_14.XPT")
+activity_17 <- read_xpt("PAQ_17_18.XPT")
+activity_21 <- read_xpt("PAQ_21_23.XPT")
+
+
+diet_13 <- read_xpt("DR2IFF_13_14.XPT")
+diet_17 <- read_xpt("DR1TOT_17_18.XPT")
+diet_21 <- read_xpt("DR2IFF_21_23.xpt")
+
+
+
+
+```
+
+
+
+```{r}
+library(dplyr)
+
+#DEMOGRAPHICS
+
+# 2013–2014 
+demo_13_clean <- demo_13 |>
+  transmute(
+    id            = SEQN,
+    cycle         = "2013_2014",
+    sex           = RIAGENDR,   # 1 = male, 2 = female
+    age           = RIDAGEYR,   # age in years at screening
+    race_eth      = RIDRETH3,   # race/ethnicity w/ NH Asian
+    marital       = DMDMARTL,   # marital status (20+)
+    education     = DMDEDUC2,   # education (adults 20+)
+    household_size= DMDHHSIZ,
+    poverty_ratio = INDFMPIR,   # family income-to-poverty ratio
+    pregnant      = RIDEXPRG    # pregnancy status at exam
+  )
+
+# 2017–2018 
+demo_17_clean <- demo_17 |>
+  transmute(
+    id            = SEQN,
+    cycle         = "2017_2018",
+    sex           = RIAGENDR,
+    age           = RIDAGEYR,
+    race_eth      = RIDRETH3,
+    marital       = DMDMARTL,
+    education     = DMDEDUC2,
+    household_size= DMDHHSIZ,
+    poverty_ratio = INDFMPIR,
+    pregnant      = RIDEXPRG
+  )
+
+# 2021–2023 
+demo_21_clean <- demo_21 |>
+  transmute(
+    id            = SEQN,
+    cycle         = "2021_2023",
+    sex           = RIAGENDR,
+    age           = RIDAGEYR,
+    race_eth      = RIDRETH3,
+    marital       = DMDMARTZ,   # name changed in this cycle
+    education     = DMDEDUC2,
+    household_size= DMDHHSIZ,
+    poverty_ratio = INDFMPIR,
+    pregnant      = RIDEXPRG
+  )
+
+
+#PHYSICAL ACTIVITY
+
+## - 2013 & 2017: keep PAQ605/610/620/625 + rec + PAD680 as-is.
+## - 2021: convert PAD790Q/U & PAD810Q/U into "times per week"
+##   so they live on the same approximate scale as PAQ610/PAQ625.
+
+# 2013–2014 
+activity_13_clean <- activity_13 |>
+  transmute(
+    id          = SEQN,
+    cycle       = "2013_2014",
+    # WORK domain
+    vig_work_yes  = PAQ605,  # 1 yes, 2 no, 7/9 missing-ish
+    vig_work_days = PAQ610,  # days/week (1–7)
+    mod_work_yes  = PAQ620,
+    mod_work_days = PAQ625,
+    # LEISURE domain
+    vig_rec_yes   = PAQ650,
+    vig_rec_days  = PAQ655,
+    mod_rec_yes   = PAQ665,
+    mod_rec_days  = PAQ670,
+    # Sedentary time (minutes/day)
+    sedentary_min = PAD680
+  )
+
+# 2017–2018 
+activity_17_clean <- activity_17 |>
+  transmute(
+    id          = SEQN,
+    cycle       = "2017_2018",
+    vig_work_yes  = PAQ605,
+    vig_work_days = PAQ610,
+    mod_work_yes  = PAQ620,
+    mod_work_days = PAQ625,
+    vig_rec_yes   = PAQ650,
+    vig_rec_days  = PAQ655,
+    mod_rec_yes   = PAQ665,
+    mod_rec_days  = PAQ670,
+    sedentary_min = PAD680
+  )
+
+# 2021–2023 
+# Only leisure-time physical activity (LTPA) is collected here:
+#  - PAD790Q/U, PAD800: moderate LTPA freq + unit + minutes
+#  - PAD810Q/U, PAD820: vigorous LTPA freq + unit + minutes
+#  - PAD680: sedentary minutes/day 
+activity_21_clean <- activity_21 |>
+  mutate(
+    # Convert moderate LTPA frequency to *times per week*
+    mod_LTPA_per_week = case_when(
+      is.na(PAD790Q) | is.na(PAD790U) ~ NA_real_,
+      PAD790Q == 0                    ~ 0,
+      PAD790U == "D"                  ~ PAD790Q * 7,     # times/day → week
+      PAD790U == "W"                  ~ PAD790Q,         # already per week
+      PAD790U == "M"                  ~ PAD790Q / 4.3,   # ≈ weeks/month
+      PAD790U == "Y"                  ~ PAD790Q / 52,    # weeks/year
+      TRUE                            ~ NA_real_
+    ),
+    # Convert vigorous LTPA frequency to *times per week*
+    vig_LTPA_per_week = case_when(
+      is.na(PAD810Q) | is.na(PAD810U) ~ NA_real_,
+      PAD810Q == 0                    ~ 0,
+      PAD810U == "D"                  ~ PAD810Q * 7,
+      PAD810U == "W"                  ~ PAD810Q,
+      PAD810U == "M"                  ~ PAD810Q / 4.3,
+      PAD810U == "Y"                  ~ PAD810Q / 52,
+      TRUE                            ~ NA_real_
+    ),
+    # Rough yes/no flags to mirror PAQ605/PAQ620 style
+    mod_LTPA_yes = case_when(
+      is.na(mod_LTPA_per_week) ~ NA_real_,
+      mod_LTPA_per_week > 0    ~ 1,   # treat as "Yes"
+      mod_LTPA_per_week == 0   ~ 2    # treat as "No"
+    ),
+    vig_LTPA_yes = case_when(
+      is.na(vig_LTPA_per_week) ~ NA_real_,
+      vig_LTPA_per_week > 0    ~ 1,
+      vig_LTPA_per_week == 0   ~ 2
+    )
+  ) |>
+  transmute(
+    id    = SEQN,
+    cycle = "2021_2023",
+
+    # Map leisure-time PA into the same column names we used above.
+    # Semantics: these are *leisure-time* moderate/vigorous activities,
+    # but we're keeping the names so you can stack/bind later.
+    vig_work_yes  = vig_LTPA_yes,
+    vig_work_days = vig_LTPA_per_week,
+    mod_work_yes  = mod_LTPA_yes,
+    mod_work_days = mod_LTPA_per_week,
+
+    # No separate transport / rec questions in this cycle — keep as NA
+    vig_rec_yes   = NA_real_,
+    vig_rec_days  = NA_real_,
+    mod_rec_yes   = NA_real_,
+    mod_rec_days  = NA_real_,
+
+    # Still directly comparable across cycles
+    sedentary_min = PAD680
+  )
+
+
+
+#DIET
+
+
+# 2013 -2014
+diet_13_clean <- diet_13 |>
+  group_by(SEQN) |>
+  summarize(
+    calories  = sum(DR2IKCAL, na.rm = TRUE),
+    protein_g = sum(DR2IPROT, na.rm = TRUE),
+    carbs_g   = sum(DR2ICARB, na.rm = TRUE),
+    sugar_g   = sum(DR2ISUGR, na.rm = TRUE),
+    fat_g     = sum(DR2ITFAT, na.rm = TRUE)
+  ) |>
+  rename(id = SEQN) |>
+  mutate(cycle = "2013_2014")
+
+# 2017 - 2018
+diet_17_clean <- diet_17 |>
+  transmute(
+    id        = SEQN,
+    calories  = DR1TKCAL,
+    protein_g = DR1TPROT,
+    carbs_g   = DR1TCARB,
+    sugar_g   = DR1TSUGR,
+    fat_g     = DR1TTFAT,
+    cycle     = "2017_2018"
+  )
+
+# 2021 - 2023
+
+diet_21_clean <- diet_21 |>
+  group_by(SEQN) |>
+  summarize(
+    calories  = sum(DR2IKCAL, na.rm = TRUE),
+    protein_g = sum(DR2IPROT, na.rm = TRUE),
+    carbs_g   = sum(DR2ICARB, na.rm = TRUE),
+    sugar_g   = sum(DR2ISUGR, na.rm = TRUE),
+    fat_g     = sum(DR2ITFAT, na.rm = TRUE)
+  ) |>
+  rename(id = SEQN) |>
+  mutate(cycle = "2021_2023")
+
+
+```
+
+```{r}
+
+#COMBINE
+demo_all <- bind_rows(demo_13_clean, demo_17_clean, demo_21_clean)
+activity_all <- bind_rows(activity_13_clean, activity_17_clean, activity_21_clean)
+diet_all <- bind_rows(diet_13_clean, diet_17_clean, diet_21_clean)
+
+full_all <- demo_all |>
+  left_join(activity_all, by = c("id", "cycle")) |>
+  left_join(diet_all,     by = c("id", "cycle"))
+
+#FILTER FOR WOMEN
+nhanes_women <- full_all |>
+  filter(sex == 2)
+
+
+```
+
+
+```{r}
+head(nhanes_women)
+```
+
+
 ## Description
 
 ## Missing value analysis
