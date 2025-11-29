@@ -200,6 +200,20 @@ head(nhanes_women)
 
 ## Missing value analysis
 
+```{r}
+nhanes_women |>
+  summarise(across(everything(), ~ sum(is.na(.)))) |>
+  pivot_longer(cols = everything(),
+               names_to = "variable",
+               values_to = "missing") |>
+  ggplot(aes(x = reorder(variable, missing), y = missing)) +
+  geom_col(fill = "#6DAEDB") +
+  coord_flip() +
+  labs(title = "Missing Values per Variable",
+       x = "Variable",
+       y = "Number of Missing Values") +
+  theme_minimal(base_size = 12)
+```
 
 
 
