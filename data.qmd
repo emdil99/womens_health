@@ -5,6 +5,7 @@ library(haven)
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
+library(forcats)
 ```
 
 ```{r}
@@ -155,34 +156,31 @@ nhanes_women <- nhanes_all |>
 # Install once if needed:
 #install.packages("labelled")
 
-library(labelled)
-library(dplyr)
-
-# Put your activity datasets in a named list
-activity_list <- list(
-  `2013-2014` = activity_13,
-  `2017-2018` = activity_17,
-  `2021-2023` = activity_21_clean
-)
-
-# For each cycle: print the label and summary of PAD615
-for (cyc in names(activity_list)) {
-  cat("\n============================\n")
-  cat("Cycle:", cyc, "\n")
-  cat("============================\n")
-  
-  df <- activity_list[[cyc]]
-  
-  # Check if PAD615 exists in this dataset
-  if (!"PAD615" %in% names(df)) {
-    print(var_label(df$vigorous_min_day))
-  } else {
-    cat("Label for PAD615:\n")
-    print(summary(df$PAD615))
-    
-    
-  }
-}
+# # Put your activity datasets in a named list
+# activity_list <- list(
+#   `2013-2014` = activity_13,
+#   `2017-2018` = activity_17,
+#   `2021-2023` = activity_21_clean
+# )
+# 
+# # For each cycle: print the label and summary of PAD615
+# for (cyc in names(activity_list)) {
+#   cat("\n============================\n")
+#   cat("Cycle:", cyc, "\n")
+#   cat("============================\n")
+#   
+#   df <- activity_list[[cyc]]
+#   
+#   # Check if PAD615 exists in this dataset
+#   if (!"PAD615" %in% names(df)) {
+#     print(var_label(df$vigorous_min_day))
+#   } else {
+#     cat("Label for PAD615:\n")
+#     print(summary(df$PAD615))
+#     
+#     
+#   }
+# }
 
 ```
 
@@ -217,5 +215,78 @@ nhanes_women |>
 
 
 
+```{r}
+ggplot(
+  nhanes_women |>
+    group_by(cycle) |>
+    summarise(across(
+      c("bmi", "ever_pregnant", "infertility_12mo", "sedentary_min_day"),
+      ~ mean(is.na(.))
+    )) |>
+    pivot_longer(cols = -cycle,
+                 names_to = "variable",
+                 values_to = "missing_prop"),
+  aes(x = fct_reorder(variable, missing_prop), 
+      y = missing_prop, 
+      fill = cycle)
+) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(title = "Missing Data Proportion by Variable and Cycle",
+       x = "Variable",
+       y = "% Missing") +
+  theme_minimal(base_size = 12)
+
+```
+
+
+
+```{r}
+
+vars <- c("bmi", "ever_pregnant", "infertility_12mo", "sedentary_min_day")
+
+miss_prop <- nhanes_women |>
+  select(cycle, all_of(vars)) |>
+  pivot_longer(
+    cols = -cycle,
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  group_by(cycle, variable) |>
+  summarise(prop_missing = mean(is.na(value)), .groups = "drop")
+
+miss_prop
+
+
+```
+
+
+```{r}
+
+ggplot(miss_prop,
+       aes(x = variable, y = cycle, fill = prop_missing)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "white", high = "red",
+                      labels = scales::percent_format(accuracy = 1),
+                      name = "% missing") +
+  labs(
+    title = "Proportion of Missing Data by Variable and NHANES Cycle",
+    x = "",
+    y = ""
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+
+
+```
+
+```{r}
+
+```
 
 

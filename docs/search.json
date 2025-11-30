@@ -24,7 +24,7 @@
     "href": "data.html#missing-value-analysis",
     "title": "2  Data",
     "section": "2.2 Missing value analysis",
-    "text": "2.2 Missing value analysis",
+    "text": "2.2 Missing value analysis\n\n\nCode\nnhanes_women |&gt;\n  summarise(across(everything(), ~ sum(is.na(.)))) |&gt;\n  pivot_longer(cols = everything(),\n               names_to = \"variable\",\n               values_to = \"missing\") |&gt;\n  ggplot(aes(x = reorder(variable, missing), y = missing)) +\n  geom_col(fill = \"#6DAEDB\") +\n  coord_flip() +\n  labs(title = \"Missing Values per Variable\",\n       x = \"Variable\",\n       y = \"Number of Missing Values\") +\n  theme_minimal(base_size = 12)",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Data</span>"
     ]
