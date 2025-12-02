@@ -1,1 +1,120 @@
 # Results
+
+
+```{r}
+
+ggplot(nhanes_women, aes(x = age, fill = cycle)) +
+  geom_density(alpha = 0.4) +
+  labs(
+    title = "Age Distribution of Women by NHANES Cycle",
+    x = "Age (years)",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 13)
+
+
+
+```
+```{r}
+ggplot(nhanes_women, aes(x = age, fill = cycle)) +
+  geom_histogram(
+    color    = "blue",
+    fill     = "lightblue",
+    binwidth = 2,
+    boundary = 0
+  ) +
+  facet_wrap(~ cycle, ncol = 1) +
+  scale_x_continuous() +  
+  labs(
+    title = "Age Histogram by NHANES Cycle (Women Only)",
+    x = "Age (years)",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 13)
+
+
+```
+
+
+
+
+```{r}
+ggplot(nhanes_women, aes(x = bmi, fill = cycle)) +
+  geom_density(alpha = 0.4) +
+  labs(
+    title = "BMI Distribution of Women by NHANES Cycle",
+    x = "BMI",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 13)
+
+```
+
+```{r}
+
+ggplot(nhanes_women, aes(x = bmi)) +
+  geom_histogram(
+    color    = "blue",
+    fill     = "lightblue",
+    binwidth = 2,
+    boundary = 0
+  ) +
+  facet_wrap(~ cycle, ncol = 1) +
+  labs(
+    title = "BMI Histogram by NHANES Cycle (Women Only)",
+    x     = "BMI",
+    y     = "Count"
+  ) +
+  theme_minimal(base_size = 13)
+
+```
+
+
+
+```{r}
+
+
+ggplot(nhanes_women,
+       aes(x = sedentary_min_day,
+           y = bmi)) +
+  geom_point(alpha = 0.3, size = 1) +
+  facet_wrap(~ cycle, ncol = 1) +
+  labs(
+    title = "BMI vs. Sedentary Minutes per Day by Cycle",
+    x     = "Sedentary minutes per day",
+    y     = "BMI"
+  ) +
+  theme_minimal(base_size = 13)
+
+
+
+
+```
+
+
+
+```{r}
+ggplot(nhanes_women,
+       aes(x = sedentary_min_day,
+           y = bmi)) +
+  geom_bin2d() +
+  facet_wrap(~ cycle, ncol = 1) +
+  scale_fill_viridis_c() +
+  labs(
+    title = "BMI vs. Sedentary Time (2D Binned Heatmap)",
+    x     = "Sedentary minutes per day",
+    y     = "BMI",
+    fill  = "Count"
+  ) +
+  theme_minimal(base_size = 13)
+
+```
+
+
+
+
+
+
+
+
+
