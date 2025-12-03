@@ -1,5 +1,11 @@
 # Results
 
+```{r}
+
+library(ggplot2)
+nhanes_women <- read.csv("nhanes_women.csv")
+
+```
 
 ```{r}
 

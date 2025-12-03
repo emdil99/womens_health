@@ -146,8 +146,11 @@ nhanes_all <- bind_rows(nhanes_13, nhanes_17, nhanes_21)
 
 
 #FILTER FOR WOMEN
-nhanes_women <- nhanes_all |>
+nhanes_w <- nhanes_all |>
   filter(sex == 2)
+
+write.csv(nhanes_w, "nhanes_women.csv", row.names = FALSE)
+
 
 
 ```
