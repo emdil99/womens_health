@@ -151,7 +151,7 @@ nhanes_w <- nhanes_all |>
 
 write.csv(nhanes_w, "nhanes_women.csv", row.names = FALSE)
 
-
+nhanes_women <- read.csv("nhanes_women.csv")
 
 ```
 
@@ -190,7 +190,7 @@ write.csv(nhanes_w, "nhanes_women.csv", row.names = FALSE)
 
 
 ```{r}
-head(nhanes_women)
+#head(nhanes_women)
 ```
 
 
@@ -201,7 +201,7 @@ head(nhanes_women)
 
 BRF <- read.csv("Behavioral_Risk_Factor_Surveillance_System.csv")
 
-head(BRF)
+#head(BRF)
 ```
 
 

@@ -1,0 +1,42 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "An Analysis of Women’s Health Trends",
+    "section": "",
+    "text": "1 Introduction",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "data.html",
+    "href": "data.html",
+    "title": "2  Data",
+    "section": "",
+    "text": "2.1 Description\n#Second Dataset",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Data</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#missing-value-analysis",
+    "href": "data.html#missing-value-analysis",
+    "title": "2  Data",
+    "section": "2.2 Missing value analysis",
+    "text": "2.2 Missing value analysis\n\n\nCode\nnhanes_women |&gt;\n  summarise(across(everything(), ~ sum(is.na(.)))) |&gt;\n  pivot_longer(cols = everything(),\n               names_to = \"variable\",\n               values_to = \"missing\") |&gt;\n  ggplot(aes(x = reorder(variable, missing), y = missing)) +\n  geom_col(fill = \"#6DAEDB\") +\n  coord_flip() +\n  labs(title = \"Missing Values per Variable\",\n       x = \"Variable\",\n       y = \"Number of Missing Values\") +\n  theme_minimal(base_size = 12)\n\n\n\n\n\n\n\n\n\n\n\nCode\nggplot(\n  nhanes_women |&gt;\n    group_by(cycle) |&gt;\n    summarise(across(\n      c(\"bmi\", \"ever_pregnant\", \"infertility_12mo\", \"sedentary_min_day\"),\n      ~ mean(is.na(.))\n    )) |&gt;\n    pivot_longer(cols = -cycle,\n                 names_to = \"variable\",\n                 values_to = \"missing_prop\"),\n  aes(x = fct_reorder(variable, missing_prop), \n      y = missing_prop, \n      fill = cycle)\n) +\n  geom_col(position = \"dodge\") +\n  coord_flip() +\n  scale_y_continuous(labels = scales::percent_format()) +\n  labs(title = \"Missing Data Proportion by Variable and Cycle\",\n       x = \"Variable\",\n       y = \"% Missing\") +\n  theme_minimal(base_size = 12)\n\n\n\n\n\n\n\n\n\n\n\nCode\nvars &lt;- c(\"bmi\", \"ever_pregnant\", \"infertility_12mo\", \"sedentary_min_day\")\n\nmiss_prop &lt;- nhanes_women |&gt;\n  select(cycle, all_of(vars)) |&gt;\n  pivot_longer(\n    cols = -cycle,\n    names_to = \"variable\",\n    values_to = \"value\"\n  ) |&gt;\n  group_by(cycle, variable) |&gt;\n  summarise(prop_missing = mean(is.na(value)), .groups = \"drop\")\n\nmiss_prop\n\n\n# A tibble: 12 × 3\n   cycle     variable          prop_missing\n   &lt;chr&gt;     &lt;chr&gt;                    &lt;dbl&gt;\n 1 2013-2014 bmi                      0.107\n 2 2013-2014 ever_pregnant            0.491\n 3 2013-2014 infertility_12mo         0.627\n 4 2013-2014 sedentary_min_day        0.287\n 5 2017-2018 bmi                      0.125\n 6 2017-2018 ever_pregnant            0.470\n 7 2017-2018 infertility_12mo         0.636\n 8 2017-2018 sedentary_min_day        0.363\n 9 2021-2023 bmi                      0.287\n10 2021-2023 ever_pregnant            0.757\n11 2021-2023 infertility_12mo         1    \n12 2021-2023 sedentary_min_day        0.301\n\n\n\n\nCode\nggplot(miss_prop,\n       aes(x = variable, y = cycle, fill = prop_missing)) +\n  geom_tile(color = \"white\") +\n  scale_fill_gradient(low = \"white\", high = \"red\",\n                      labels = scales::percent_format(accuracy = 1),\n                      name = \"% missing\") +\n  labs(\n    title = \"Proportion of Missing Data by Variable and NHANES Cycle\",\n    x = \"\",\n    y = \"\"\n  ) +\n  theme_bw() +\n  theme(\n    axis.text.x = element_text(angle = 45, hjust = 1)\n  )",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Data</span>"
+    ]
+  },
+  {
+    "objectID": "results.html",
+    "href": "results.html",
+    "title": "3  Results",
+    "section": "",
+    "text": "Code\nlibrary(ggplot2)\nnhanes_women &lt;- read.csv(\"nhanes_women.csv\")\n\n\n\n\nCode\nggplot(nhanes_women, aes(x = age, fill = cycle)) +\n  geom_density(alpha = 0.4) +\n  labs(\n    title = \"Age Distribution of Women by NHANES Cycle\",\n    x = \"Age (years)\",\n    y = \"Density\"\n  ) +\n  theme_minimal(base_size = 13)\n\n\n\n\n\n\n\n\n\n\n\nCode\nggplot(nhanes_women, aes(x = age, fill = cycle)) +\n  geom_histogram(\n    color    = \"blue\",\n    fill     = \"lightblue\",\n    binwidth = 2,\n    boundary = 0\n  ) +\n  facet_wrap(~ cycle, ncol = 1) +\n  scale_x_continuous() +  \n  labs(\n    title = \"Age Histogram by NHANES Cycle (Women Only)\",\n    x = \"Age (years)\",\n    y = \"Count\"\n  ) +\n  theme_minimal(base_size = 13)\n\n\n\n\n\n\n\n\n\n\n\nCode\nggplot(nhanes_women, aes(x = bmi, fill = cycle)) +\n  geom_density(alpha = 0.4) +\n  labs(\n    title = \"BMI Distribution of Women by NHANES Cycle\",\n    x = \"BMI\",\n    y = \"Density\"\n  ) +\n  theme_minimal(base_size = 13)\n\n\nWarning: Removed 2966 rows containing non-finite outside the scale range\n(`stat_density()`).\n\n\n\n\n\n\n\n\n\n\n\nCode\nggplot(nhanes_women, aes(x = bmi)) +\n  geom_histogram(\n    color    = \"blue\",\n    fill     = \"lightblue\",\n    binwidth = 2,\n    boundary = 0\n  ) +\n  facet_wrap(~ cycle, ncol = 1) +\n  labs(\n    title = \"BMI Histogram by NHANES Cycle (Women Only)\",\n    x     = \"BMI\",\n    y     = \"Count\"\n  ) +\n  theme_minimal(base_size = 13)\n\n\nWarning: Removed 2966 rows containing non-finite outside the scale range\n(`stat_bin()`).\n\n\n\n\n\n\n\n\n\n\n\nCode\nggplot(nhanes_women,\n       aes(x = sedentary_min_day,\n           y = bmi)) +\n  geom_point(alpha = 0.3, size = 1) +\n  facet_wrap(~ cycle, ncol = 1) +\n  labs(\n    title = \"BMI vs. Sedentary Minutes per Day by Cycle\",\n    x     = \"Sedentary minutes per day\",\n    y     = \"BMI\"\n  ) +\n  theme_minimal(base_size = 13)\n\n\nWarning: Removed 6513 rows containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\n\n\n\nCode\nggplot(nhanes_women,\n       aes(x = sedentary_min_day,\n           y = bmi)) +\n  geom_bin2d() +\n  facet_wrap(~ cycle, ncol = 1) +\n  scale_fill_viridis_c() +\n  labs(\n    title = \"BMI vs. Sedentary Time (2D Binned Heatmap)\",\n    x     = \"Sedentary minutes per day\",\n    y     = \"BMI\",\n    fill  = \"Count\"\n  ) +\n  theme_minimal(base_size = 13)\n\n\n`stat_bin2d()` using `bins = 30`. Pick better value `binwidth`.\n\n\nWarning: Removed 6513 rows containing non-finite outside the scale range\n(`stat_bin2d()`).",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Results</span>"
+    ]
+  }
+]
