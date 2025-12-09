@@ -231,6 +231,7 @@ ggplot(
 ) +
   geom_col(position = "dodge") +
   coord_flip() +
+  scale_fill_brewer(palette = "Blues") +
   scale_y_continuous(labels = scales::percent_format()) +
   labs(title = "Missing Data Proportion by Variable and Cycle",
        x = "Variable",
@@ -266,7 +267,7 @@ miss_prop <- nhanes_women |>
 ggplot(miss_prop,
        aes(x = variable, y = cycle, fill = prop_missing)) +
   geom_tile(color = "white") +
-  scale_fill_gradient(low = "white", high = "red",
+  scale_fill_gradient(low = "white", high = "lightblue",
                       labels = scales::percent_format(accuracy = 1),
                       name = "% missing") +
   labs(
@@ -281,6 +282,40 @@ ggplot(miss_prop,
 
 
 
+
+```
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+presence_df <- women_brf %>%
+  distinct(Year, Topic) %>%
+  mutate(present = 1)
+
+# Create full grid of all Year × Topic combinations
+full_grid <- expand.grid(
+  Year = unique(women_brf$Year),
+  Topic = unique(women_brf$Topic)
+)
+
+presence_matrix <- full_grid %>%
+  left_join(presence_df, by = c("Year", "Topic")) %>%
+  mutate(present = ifelse(is.na(present), 0, present))
+
+ggplot(presence_matrix, aes(x = Year, y = Topic, fill = factor(present))) +
+  geom_tile(color = "white") +
+  scale_fill_manual(
+    values = c("0" = "#cccccb", "1" = "lightblue2"),
+    labels = c("Not Collected", "Collected"),
+    name = "Survey Availability"
+  ) +
+  labs(
+    title = "Which Women's Health Measures Were Collected Each Year?",
+    x = "Year",
+    y = "Exercise Topic"
+  ) +
+  theme_minimal(base_size = 14)
 
 ```
 

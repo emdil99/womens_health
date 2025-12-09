@@ -4,6 +4,7 @@
 
 library(dplyr)
 library(ggplot2)
+library(ggridges)
 library(sf)
 library(tigris)
 
@@ -12,6 +13,12 @@ nhanes_women <- read.csv("nhanes_women.csv")
 women_brf <- read.csv("women_brf.csv")
 
 ```
+
+
+  
+
+
+
 
 ```{r}
 
@@ -27,6 +34,9 @@ ggplot(nhanes_women, aes(x = age, fill = cycle)) +
 
 
 ```
+
+
+
 ```{r}
 ggplot(nhanes_women, aes(x = age, fill = cycle)) +
   geom_histogram(
@@ -81,6 +91,7 @@ ggplot(nhanes_women, aes(x = bmi)) +
 
 ```
 
+
 ```{r}
 
 set.seed(123)  # for reproducibility
@@ -96,7 +107,7 @@ nhanes_sampled <- nhanes_women %>%
 
 # Plot: BMI vs Age, faceted by cycle
 ggplot(nhanes_sampled, aes(x = age, y = bmi)) +
-  geom_point(alpha = 0.6, size = 1.8, color = "#4A7C59") +
+  geom_point(alpha = 0.6, size = 1.8, color = "lightblue3") +
   geom_smooth(se = FALSE, method = "loess", color = "black") +
   facet_wrap(~ cycle) +
   labs(
@@ -131,6 +142,25 @@ ggplot(nhanes_women,
 ```
 
 ```{r}
+ggplot(nhanes_women,
+       aes(x = sedentary_min_day,
+           y = bmi)) +
+  geom_bin2d() +
+  facet_wrap(~ cycle, ncol = 1) +
+  scale_fill_viridis_c() +
+  labs(
+    title = "BMI vs. Sedentary Time (2D Binned Heatmap)",
+    x     = "Sedentary minutes per day",
+    y     = "BMI",
+    fill  = "Count"
+  ) +
+  theme_minimal(base_size = 13)
+
+```
+
+
+
+```{r}
 
 nhanes_clean <- nhanes_women %>%
   filter(!is.na(age), !is.na(sedentary_min_day), age > 0) %>%
@@ -145,7 +175,7 @@ nhanes_clean <- nhanes_women %>%
 
 # Boxplot of sedentary minutes by age group
 ggplot(nhanes_clean, aes(x = age_group, y = sedentary_min_day)) +
-  geom_boxplot(fill = "#A3C6A8", alpha = 0.8, outlier.alpha = 0.5) +
+  geom_boxplot(fill = "#d3e5ff", alpha = 0.8, outlier.alpha = 0.5) +
   labs(
     x = "Age Group",
     y = "Sedentary Minutes per Day",
@@ -176,7 +206,7 @@ nhanes_clean <- nhanes_women %>%
 ggplot(nhanes_clean, aes(x = infert_status, fill = infert_status)) +
   geom_bar(alpha = 0.85) +
   facet_wrap(~ cycle) +
-  scale_fill_manual(values = c("Yes" = "#8FB996", "No" = "#4A7C59")) +
+  scale_fill_manual(values = c("Yes" = "lightblue2", "No" = "#d3e5ff")) +
   labs(
     x = "Reported Infertility in Last 12 Months",
     y = "Count of Women",
@@ -189,6 +219,40 @@ ggplot(nhanes_clean, aes(x = infert_status, fill = infert_status)) +
     strip.text = element_text(size = 12, face = "bold")
   )
 ```
+```{r}
+nhanes_ridge <- nhanes_women %>%
+  filter(
+    !is.na(sedentary_min_day),
+    !is.na(ever_pregnant),
+    age >= 20,
+    age <= 40
+  ) %>%
+  mutate(
+    preg_status = case_when(
+      ever_pregnant == 1 ~ "Ever pregnant",
+      ever_pregnant == 2 ~ "Never pregnant",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(preg_status))
+
+ggplot(nhanes_ridge, aes(x = sedentary_min_day, y = preg_status, fill = preg_status)) +
+  geom_density_ridges(alpha = 0.7, scale = 1.1, rel_min_height = 0.01) +
+  facet_wrap(~ cycle) +
+  scale_fill_brewer(palette = "Blues") +
+  labs(
+    x = "Sedentary Minutes per Day",
+    y = "",
+    title = "Sedentary Minutes Distribution (Ages 20–40) by Pregnancy History and NHANES Cycle"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(size = 12, face = "bold")
+  )
+```
+
+
 ```{r}
 # Clean + recode infertility variable
 df <- nhanes_women %>%
@@ -206,7 +270,7 @@ df <- nhanes_women %>%
 ggplot(df, aes(x = infert_status, y = sedentary_min_day, fill = infert_status)) +
   geom_violin(alpha = 0.5) +
   geom_boxplot(width = 0.15, alpha = 0.8, outlier.alpha = 0.3) +
-  scale_fill_manual(values = c("Yes" = "#8FB996", "No" = "#4A7C59")) +
+  scale_fill_manual(values = c("Yes" = "lightblue2", "No" = "#d3e5ff")) +
   theme_minimal()
 
 
@@ -214,26 +278,20 @@ ggplot(df, aes(x = infert_status, y = sedentary_min_day, fill = infert_status)) 
 ```
 
 
-
-
-
-
 ```{r}
-ggplot(nhanes_women,
-       aes(x = sedentary_min_day,
-           y = bmi)) +
-  geom_bin2d() +
-  facet_wrap(~ cycle, ncol = 1) +
-  scale_fill_viridis_c() +
+ggplot(nhanes_summary, aes(x = cycle, y = median_sedentary, group = 1)) +
+  geom_line(color = "#4e79a7", size = 1.2) +
+  geom_point(size = 3, color = "#4e79a7") +
   labs(
-    title = "BMI vs. Sedentary Time (2D Binned Heatmap)",
-    x     = "Sedentary minutes per day",
-    y     = "BMI",
-    fill  = "Count"
+    title = "Median Sedentary Minutes per Day by NHANES Cycle",
+    x = "NHANES Cycle",
+    y = "Median Sedentary Minutes"
   ) +
-  theme_minimal(base_size = 13)
+  theme_minimal()
 
 ```
+
+
 ```{r}
 strength_trend <- women_brf %>%
   filter(Topic == "Strength Activity") %>%   # choose strength training
@@ -279,7 +337,7 @@ ggplot(multi_trend, aes(x = Year, y = mean_value, color = Topic)) +
     color = "Activity Type"
   ) +
   theme_minimal(base_size = 14) +
-  scale_color_brewer(palette = "Dark2")
+  scale_color_brewer(palette = "Blues")
 
 
 
