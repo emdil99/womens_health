@@ -81,7 +81,34 @@ ggplot(nhanes_women, aes(x = bmi)) +
 
 ```
 
+```{r}
 
+set.seed(123)  # for reproducibility
+
+nhanes_women <- read.csv("nhanes_women.csv")
+
+# Clean + sample 100 points per cycle
+nhanes_sampled <- nhanes_women %>%
+  filter(!is.na(age), !is.na(bmi), age > 0) %>%
+  group_by(cycle) %>%
+  slice_sample(n = 100) %>%   # randomly pick 100 per cycle
+  ungroup()
+
+# Plot: BMI vs Age, faceted by cycle
+ggplot(nhanes_sampled, aes(x = age, y = bmi)) +
+  geom_point(alpha = 0.6, size = 1.8, color = "#4A7C59") +
+  geom_smooth(se = FALSE, method = "loess", color = "black") +
+  facet_wrap(~ cycle) +
+  labs(
+    x = "Age (years)",
+    y = "BMI",
+    title = "BMI vs Age Among Women (Random Sample of 100 per NHANES Cycle)"
+  ) +
+  theme_minimal()
+
+
+
+```
 
 ```{r}
 
@@ -103,6 +130,92 @@ ggplot(nhanes_women,
 
 ```
 
+```{r}
+
+nhanes_clean <- nhanes_women %>%
+  filter(!is.na(age), !is.na(sedentary_min_day), age > 0) %>%
+  mutate(
+    age_group = case_when(
+      age < 20 ~ "0–19",
+      age < 40 ~ "20–39",
+      age < 60 ~ "40–59",
+      TRUE     ~ "60+"
+    )
+  )
+
+# Boxplot of sedentary minutes by age group
+ggplot(nhanes_clean, aes(x = age_group, y = sedentary_min_day)) +
+  geom_boxplot(fill = "#A3C6A8", alpha = 0.8, outlier.alpha = 0.5) +
+  labs(
+    x = "Age Group",
+    y = "Sedentary Minutes per Day",
+    title = "Sedentary Behavior Across Age Groups in Women (NHANES)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.text = element_text(size = 11)
+  )
+
+
+```
+```{r}
+# Clean + recode infertility response
+nhanes_clean <- nhanes_women %>%
+  filter(!is.na(infertility_12mo)) %>%
+  mutate(
+    infert_status = case_when(
+      infertility_12mo == 1 ~ "Yes",
+      infertility_12mo == 2 ~ "No",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(infert_status))
+
+# Faceted bar plot
+ggplot(nhanes_clean, aes(x = infert_status, fill = infert_status)) +
+  geom_bar(alpha = 0.85) +
+  facet_wrap(~ cycle) +
+  scale_fill_manual(values = c("Yes" = "#8FB996", "No" = "#4A7C59")) +
+  labs(
+    x = "Reported Infertility in Last 12 Months",
+    y = "Count of Women",
+    title = "Infertility Responses by NHANES Cycle"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size = 14, face = "bold"),
+    strip.text = element_text(size = 12, face = "bold")
+  )
+```
+```{r}
+# Clean + recode infertility variable
+df <- nhanes_women %>%
+  filter(!is.na(infertility_12mo),
+         !is.na(sedentary_min_day)) %>%
+  mutate(
+    infert_status = case_when(
+      infertility_12mo == 1 ~ "Yes",
+      infertility_12mo == 2 ~ "No",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(infert_status))
+
+ggplot(df, aes(x = infert_status, y = sedentary_min_day, fill = infert_status)) +
+  geom_violin(alpha = 0.5) +
+  geom_boxplot(width = 0.15, alpha = 0.8, outlier.alpha = 0.3) +
+  scale_fill_manual(values = c("Yes" = "#8FB996", "No" = "#4A7C59")) +
+  theme_minimal()
+
+
+
+```
+
+
+
+
 
 
 ```{r}
@@ -121,14 +234,95 @@ ggplot(nhanes_women,
   theme_minimal(base_size = 13)
 
 ```
+```{r}
+strength_trend <- women_brf %>%
+  filter(Topic == "Strength Activity") %>%   # choose strength training
+  group_by(Year) %>%
+  summarize(
+    mean_strength = mean(Data_value, na.rm = TRUE)
+  )
+
+ggplot(strength_trend, aes(x = Year, y = mean_strength)) +
+  geom_line(color = "#4e79a7", linewidth = 1.2) +
+  geom_point(color = "#4e79a7", size = 2) +
+  labs(
+    title = "Strength Training Among Women (2011–2023)",
+    y = "% Meeting Strength Training Guidelines",
+    x = "Year"
+  ) +
+  theme_minimal()
+
+
+
+
+```
+
+```{r}
+
+multi_trend <- women_brf %>%
+  filter(Topic %in% c("Aerobic Activity",
+                      "Strength Activity",
+                      "Physical Activity Index")) %>% 
+  group_by(Year, Topic) %>%
+  summarize(
+    mean_value = mean(Data_value, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+ggplot(multi_trend, aes(x = Year, y = mean_value, color = Topic)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Women's Physical Activity Trends (2011–2023)",
+    x = "Year",
+    y = "% of Women Meeting Guideline or Responding 'Yes'",
+    color = "Activity Type"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_color_brewer(palette = "Dark2")
+
+
+
+
+
+```
+
+```{r, fig.width= 8, fig.height= 8}
+
+year_to_plot <- 2023
+
+df_year <- women_brf %>%
+  filter(Year == year_to_plot,
+         Topic %in% c("Aerobic Activity", "Strength Activity")) %>%
+  group_by(Locationdesc, Topic) %>%
+  summarize(
+    value = mean(Data_value, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+ggplot(df_year, aes(x = value, y = Locationdesc, color = Topic)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("#1f77b4", "#d62728")) +
+  labs(
+    title = paste("Aerobic vs Strength Activity Among Women —", year_to_plot),
+    x = "% Meeting Guideline",
+    y = "State",
+    color = "Exercise Type"
+  ) +
+  theme_minimal(base_size = 13)
+
+
+
+  
+
+
+```
 
 ```{r}
 
 
 
-
-
-women_pa <- BRF %>%
+women_pa_13 <- women_brf %>%
   filter(
     Year == 2013,                       
     Break_Out_Category == "Sex",
@@ -141,13 +335,16 @@ women_pa <- BRF %>%
   )
 
 
-states_sf <- states(cb = TRUE)
+#states_sf <- states(cb = TRUE)
+#sf::st_write(states_sf, "states_sf.gpkg", quiet = TRUE)
+states_sf <- sf::st_read("states_sf.gpkg", quiet = TRUE)
 
 
-states_joined <- states_sf |>
-  left_join(women_pa, by = c("STUSPS" = "state_abbr"))
+states_joined_13 <- states_sf |>
+  left_join(women_pa_13, by = c("STUSPS" = "state_abbr"))
 
-ggplot(states_joined) +
+
+ggplot(states_joined_13) +
   geom_sf(aes(fill = pct_yes), color = "white", size = 0.2) +
   scale_fill_viridis_c(option = "plasma", name = "% Yes") +
   coord_sf(
@@ -171,7 +368,7 @@ ggplot(states_joined) +
 
 ```{r}
 
-women_pa <- BRF %>%
+women_pa_23 <- women_brf %>%
   filter(
     Year == 2023,                       
     Break_Out_Category == "Sex",
@@ -184,13 +381,11 @@ women_pa <- BRF %>%
   )
 
 
-states_sf <- states(cb = TRUE)
 
+states_joined_23 <- states_sf |>
+  left_join(women_pa_23, by = c("STUSPS" = "state_abbr"))
 
-states_joined <- states_sf |>
-  left_join(women_pa, by = c("STUSPS" = "state_abbr"))
-
-ggplot(states_joined) +
+ggplot(states_joined_23) +
   geom_sf(aes(fill = pct_yes), color = "white", size = 0.2) +
   scale_fill_viridis_c(option = "plasma", name = "% Yes") +
   coord_sf(

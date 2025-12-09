@@ -4,6 +4,8 @@ project:
 
 execute:
   echo: true
+  warning: false
+  message: false
 
 book:
   title: "An Analysis of Women's Health Trends"
