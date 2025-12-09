@@ -155,37 +155,7 @@ nhanes_women <- read.csv("nhanes_women.csv")
 
 ```
 
-```{r}
-# Install once if needed:
-#install.packages("labelled")
 
-# # Put your activity datasets in a named list
-# activity_list <- list(
-#   `2013-2014` = activity_13,
-#   `2017-2018` = activity_17,
-#   `2021-2023` = activity_21_clean
-# )
-# 
-# # For each cycle: print the label and summary of PAD615
-# for (cyc in names(activity_list)) {
-#   cat("\n============================\n")
-#   cat("Cycle:", cyc, "\n")
-#   cat("============================\n")
-#   
-#   df <- activity_list[[cyc]]
-#   
-#   # Check if PAD615 exists in this dataset
-#   if (!"PAD615" %in% names(df)) {
-#     print(var_label(df$vigorous_min_day))
-#   } else {
-#     cat("Label for PAD615:\n")
-#     print(summary(df$PAD615))
-#     
-#     
-#   }
-# }
-
-```
 
 
 
@@ -199,9 +169,22 @@ nhanes_women <- read.csv("nhanes_women.csv")
 
 ```{r}
 
+
+#each row in this dataset is a pre calculated summary statistic
+
 BRF <- read.csv("Behavioral_Risk_Factor_Surveillance_System.csv")
 
-#head(BRF)
+
+
+women_brf <- BRF |>
+  filter(Break_Out_Category == "Sex",
+         Break_Out == "Female",
+         Response == "Yes")
+
+#head(women_brf)
+
+write.csv(women_brf, "women_brf.csv", row.names = FALSE)
+
 ```
 
 
@@ -272,7 +255,7 @@ miss_prop <- nhanes_women |>
   group_by(cycle, variable) |>
   summarise(prop_missing = mean(is.na(value)), .groups = "drop")
 
-miss_prop
+#miss_prop
 
 
 ```
@@ -301,8 +284,6 @@ ggplot(miss_prop,
 
 ```
 
-```{r}
 
-```
 
 

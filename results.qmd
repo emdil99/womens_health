@@ -2,8 +2,14 @@
 
 ```{r}
 
+library(dplyr)
+library(ggplot2)
+library(sf)
+library(tigris)
+
 library(ggplot2)
 nhanes_women <- read.csv("nhanes_women.csv")
+women_brf <- read.csv("women_brf.csv")
 
 ```
 
@@ -116,7 +122,92 @@ ggplot(nhanes_women,
 
 ```
 
+```{r}
 
+
+
+
+
+women_pa <- BRF %>%
+  filter(
+    Year == 2013,                       
+    Break_Out_Category == "Sex",
+    Break_Out == "Female",
+    Response == "Yes"
+  ) %>%
+  transmute(
+    state_abbr = Locationabbr,    
+    pct_yes    = as.numeric(Data_value)
+  )
+
+
+states_sf <- states(cb = TRUE)
+
+
+states_joined <- states_sf |>
+  left_join(women_pa, by = c("STUSPS" = "state_abbr"))
+
+ggplot(states_joined) +
+  geom_sf(aes(fill = pct_yes), color = "white", size = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "% Yes") +
+  coord_sf(
+    xlim = c(-125, -66),   # zoom to US
+    ylim = c(24, 50),
+    expand = FALSE
+  ) +
+  labs(
+    title = "Women Meeting Physical Activity Guidelines by State",
+    subtitle = "CDC BRFSS",
+    fill = "% Yes"
+  ) +
+  theme_minimal()
+
+
+```
+
+
+
+
+
+```{r}
+
+women_pa <- BRF %>%
+  filter(
+    Year == 2023,                       
+    Break_Out_Category == "Sex",
+    Break_Out == "Female",
+    Response == "Yes"
+  ) %>%
+  transmute(
+    state_abbr = Locationabbr,    
+    pct_yes    = as.numeric(Data_value)
+  )
+
+
+states_sf <- states(cb = TRUE)
+
+
+states_joined <- states_sf |>
+  left_join(women_pa, by = c("STUSPS" = "state_abbr"))
+
+ggplot(states_joined) +
+  geom_sf(aes(fill = pct_yes), color = "white", size = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "% Yes") +
+  coord_sf(
+    xlim = c(-125, -66),   # zoom to US
+    ylim = c(24, 50),
+    expand = FALSE
+  ) +
+  labs(
+    title = "Women Meeting Physical Activity Guidelines by State",
+    subtitle = "CDC BRFSS",
+    fill = "% Yes"
+  ) +
+  theme_minimal()
+
+
+
+```
 
 
 
