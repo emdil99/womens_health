@@ -1,1 +1,6 @@
 # Introduction
+
+
+For my final project I am interested in exploring trends in women's health factors. For the past three years I have worked part time as a group fitness instructor, with the majority of my clients being women. My perception being in the field is that women are becoming increasingly involved with fitness, with boutique studio businesses growing rapidly. I also find that with social media, we see trends of more women discussing their health online. I am curious to dive into the data to see the real story the numbers are telling. Have reported physical activity levels changed? Are women in certain areas of the country more concerned with their health than others? 
+
+Another factor that is of interest to me is how fitness levels relate to other features seen in the dataset. If time permits I'd like to dive into some of the data available on miscarriages, hormone treatments, etc and visualize some of the trends there as well.

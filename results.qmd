@@ -8,16 +8,11 @@ library(ggridges)
 library(sf)
 library(tigris)
 
-library(ggplot2)
+
 nhanes_women <- read.csv("nhanes_women.csv")
 women_brf <- read.csv("women_brf.csv")
 
 ```
-
-
-  
-
-
 
 
 ```{r}
@@ -34,7 +29,6 @@ ggplot(nhanes_women, aes(x = age, fill = cycle)) +
 
 
 ```
-
 
 
 ```{r}
@@ -58,8 +52,6 @@ ggplot(nhanes_women, aes(x = age, fill = cycle)) +
 ```
 
 
-
-
 ```{r}
 ggplot(nhanes_women, aes(x = bmi, fill = cycle)) +
   geom_density(alpha = 0.4) +
@@ -71,6 +63,7 @@ ggplot(nhanes_women, aes(x = bmi, fill = cycle)) +
   theme_minimal(base_size = 13)
 
 ```
+
 
 ```{r}
 
@@ -99,10 +92,10 @@ set.seed(123)  # for reproducibility
 nhanes_women <- read.csv("nhanes_women.csv")
 
 # Clean + sample 100 points per cycle
-nhanes_sampled <- nhanes_women %>%
-  filter(!is.na(age), !is.na(bmi), age > 0) %>%
-  group_by(cycle) %>%
-  slice_sample(n = 100) %>%   # randomly pick 100 per cycle
+nhanes_sampled <- nhanes_women |>
+  filter(!is.na(age), !is.na(bmi), age > 0) |>
+  group_by(cycle) |>
+  slice_sample(n = 100) |>   # randomly pick 100 per cycle
   ungroup()
 
 # Plot: BMI vs Age, faceted by cycle
@@ -121,25 +114,27 @@ ggplot(nhanes_sampled, aes(x = age, y = bmi)) +
 
 ```
 
+
 ```{r}
 
-
-ggplot(nhanes_women,
-       aes(x = sedentary_min_day,
-           y = bmi)) +
-  geom_point(alpha = 0.3, size = 1) +
-  facet_wrap(~ cycle, ncol = 1) +
-  labs(
-    title = "BMI vs. Sedentary Minutes per Day by Cycle",
-    x     = "Sedentary minutes per day",
-    y     = "BMI"
-  ) +
-  theme_minimal(base_size = 13)
+# 
+# ggplot(nhanes_women,
+#        aes(x = sedentary_min_day,
+#            y = bmi)) +
+#   geom_point(alpha = 0.3, size = 1) +
+#   facet_wrap(~ cycle, ncol = 1) +
+#   labs(
+#     title = "BMI vs. Sedentary Minutes per Day by Cycle",
+#     x     = "Sedentary minutes per day",
+#     y     = "BMI"
+#   ) +
+#   theme_minimal(base_size = 13)
 
 
 
 
 ```
+
 
 ```{r}
 ggplot(nhanes_women,
@@ -159,11 +154,10 @@ ggplot(nhanes_women,
 ```
 
 
-
 ```{r}
 
-nhanes_clean <- nhanes_women %>%
-  filter(!is.na(age), !is.na(sedentary_min_day), age > 0) %>%
+nhanes_clean <- nhanes_women |>
+  filter(!is.na(age), !is.na(sedentary_min_day), age > 0) |>
   mutate(
     age_group = case_when(
       age < 20 ~ "0–19",
@@ -189,17 +183,19 @@ ggplot(nhanes_clean, aes(x = age_group, y = sedentary_min_day)) +
 
 
 ```
+
+
 ```{r}
 # Clean + recode infertility response
-nhanes_clean <- nhanes_women %>%
-  filter(!is.na(infertility_12mo)) %>%
+nhanes_clean <- nhanes_women |>
+  filter(!is.na(infertility_12mo)) |>
   mutate(
     infert_status = case_when(
       infertility_12mo == 1 ~ "Yes",
       infertility_12mo == 2 ~ "No",
       TRUE ~ NA_character_
     )
-  ) %>%
+  ) |>
   filter(!is.na(infert_status))
 
 # Faceted bar plot
@@ -219,21 +215,23 @@ ggplot(nhanes_clean, aes(x = infert_status, fill = infert_status)) +
     strip.text = element_text(size = 12, face = "bold")
   )
 ```
+
+
 ```{r}
-nhanes_ridge <- nhanes_women %>%
+nhanes_ridge <- nhanes_women |>
   filter(
     !is.na(sedentary_min_day),
     !is.na(ever_pregnant),
     age >= 20,
     age <= 40
-  ) %>%
+  ) |>
   mutate(
     preg_status = case_when(
       ever_pregnant == 1 ~ "Ever pregnant",
       ever_pregnant == 2 ~ "Never pregnant",
       TRUE ~ NA_character_
     )
-  ) %>%
+  ) |>
   filter(!is.na(preg_status))
 
 ggplot(nhanes_ridge, aes(x = sedentary_min_day, y = preg_status, fill = preg_status)) +
@@ -255,16 +253,16 @@ ggplot(nhanes_ridge, aes(x = sedentary_min_day, y = preg_status, fill = preg_sta
 
 ```{r}
 # Clean + recode infertility variable
-df <- nhanes_women %>%
+df <- nhanes_women |>
   filter(!is.na(infertility_12mo),
-         !is.na(sedentary_min_day)) %>%
+         !is.na(sedentary_min_day)) |>
   mutate(
     infert_status = case_when(
       infertility_12mo == 1 ~ "Yes",
       infertility_12mo == 2 ~ "No",
       TRUE ~ NA_character_
     )
-  ) %>%
+  ) |>
   filter(!is.na(infert_status))
 
 ggplot(df, aes(x = infert_status, y = sedentary_min_day, fill = infert_status)) +
@@ -279,13 +277,25 @@ ggplot(df, aes(x = infert_status, y = sedentary_min_day, fill = infert_status)) 
 
 
 ```{r}
+
+
+
+nhanes_summary <- nhanes_women |>
+  filter(!is.na(sedentary_min_day)) |>
+  group_by(cycle) |>
+  summarise(
+    median_sedentary = median(sedentary_min_day, na.rm = TRUE)
+  ) |>
+  ungroup()
+
+# Line plot
 ggplot(nhanes_summary, aes(x = cycle, y = median_sedentary, group = 1)) +
-  geom_line(color = "#4e79a7", size = 1.2) +
+  geom_line(color = "#4e79a7", size = 1.3) +
   geom_point(size = 3, color = "#4e79a7") +
   labs(
     title = "Median Sedentary Minutes per Day by NHANES Cycle",
     x = "NHANES Cycle",
-    y = "Median Sedentary Minutes"
+    y = "Median Sedentary Minutes per Day"
   ) +
   theme_minimal()
 
@@ -293,9 +303,9 @@ ggplot(nhanes_summary, aes(x = cycle, y = median_sedentary, group = 1)) +
 
 
 ```{r}
-strength_trend <- women_brf %>%
-  filter(Topic == "Strength Activity") %>%   # choose strength training
-  group_by(Year) %>%
+strength_trend <- women_brf |>
+  filter(Topic == "Strength Activity") |>   # choose strength training
+  group_by(Year) |>
   summarize(
     mean_strength = mean(Data_value, na.rm = TRUE)
   )
@@ -315,13 +325,14 @@ ggplot(strength_trend, aes(x = Year, y = mean_strength)) +
 
 ```
 
+
 ```{r}
 
-multi_trend <- women_brf %>%
+multi_trend <- women_brf |>
   filter(Topic %in% c("Aerobic Activity",
                       "Strength Activity",
-                      "Physical Activity Index")) %>% 
-  group_by(Year, Topic) %>%
+                      "Physical Activity Index")) |> 
+  group_by(Year, Topic) |>
   summarize(
     mean_value = mean(Data_value, na.rm = TRUE),
     .groups = "drop"
@@ -345,14 +356,15 @@ ggplot(multi_trend, aes(x = Year, y = mean_value, color = Topic)) +
 
 ```
 
+
 ```{r, fig.width= 8, fig.height= 8}
 
 year_to_plot <- 2023
 
-df_year <- women_brf %>%
+df_year <- women_brf |>
   filter(Year == year_to_plot,
-         Topic %in% c("Aerobic Activity", "Strength Activity")) %>%
-  group_by(Locationdesc, Topic) %>%
+         Topic %in% c("Aerobic Activity", "Strength Activity")) |>
+  group_by(Locationdesc, Topic) |>
   summarize(
     value = mean(Data_value, na.rm = TRUE),
     .groups = "drop"
@@ -360,7 +372,7 @@ df_year <- women_brf %>%
 
 ggplot(df_year, aes(x = value, y = Locationdesc, color = Topic)) +
   geom_point(size = 3) +
-  scale_color_manual(values = c("#1f77b4", "#d62728")) +
+  scale_color_manual(values = c("#1f77b4", "lightblue2")) +
   labs(
     title = paste("Aerobic vs Strength Activity Among Women —", year_to_plot),
     x = "% Meeting Guideline",
@@ -376,17 +388,18 @@ ggplot(df_year, aes(x = value, y = Locationdesc, color = Topic)) +
 
 ```
 
+
 ```{r}
 
 
 
-women_pa_13 <- women_brf %>%
+women_pa_13 <- women_brf |>
   filter(
     Year == 2013,                       
     Break_Out_Category == "Sex",
     Break_Out == "Female",
     Response == "Yes"
-  ) %>%
+  ) |>
   transmute(
     state_abbr = Locationabbr,    
     pct_yes    = as.numeric(Data_value)
@@ -421,18 +434,15 @@ ggplot(states_joined_13) +
 ```
 
 
-
-
-
 ```{r}
 
-women_pa_23 <- women_brf %>%
+women_pa_23 <- women_brf |>
   filter(
     Year == 2023,                       
     Break_Out_Category == "Sex",
     Break_Out == "Female",
     Response == "Yes"
-  ) %>%
+  ) |>
   transmute(
     state_abbr = Locationabbr,    
     pct_yes    = as.numeric(Data_value)
@@ -459,12 +469,5 @@ ggplot(states_joined_23) +
   theme_minimal()
 
 
-
 ```
-
-
-
-
-
-
 

@@ -64,7 +64,6 @@ activity_21_clean <- activity_21 |>
 
 
 
-
 nhanes_13 <- demo_13 |>
   select(SEQN, RIDAGEYR,RIAGENDR) |>
   left_join(bmx_13 |> select(SEQN, BMXBMI), by = "SEQN") |>
@@ -82,7 +81,6 @@ nhanes_13 <- demo_13 |>
 
 
 
-
 nhanes_17 <- demo_17 |>
   select(SEQN, RIDAGEYR,RIAGENDR) |>
   left_join(bmx_17 |> select(SEQN, BMXBMI), by = "SEQN") |>
@@ -97,9 +95,6 @@ nhanes_17 <- demo_17 |>
     sedentary_min_day = PAD680
   ) |>
   mutate(cycle = "2017-2018")
-
-
-
 
 
 
@@ -153,37 +148,30 @@ write.csv(nhanes_w, "nhanes_women.csv", row.names = FALSE)
 
 nhanes_women <- read.csv("nhanes_women.csv")
 
-```
-
-
-
-
-
-```{r}
 #head(nhanes_women)
 ```
 
 
 
-#Second Dataset
-
 ```{r}
 
+#second dataset
 
 #each row in this dataset is a pre calculated summary statistic
 
 BRF <- read.csv("Behavioral_Risk_Factor_Surveillance_System.csv")
 
-
-
-women_brf <- BRF |>
-  filter(Break_Out_Category == "Sex",
-         Break_Out == "Female",
-         Response == "Yes")
+# women_brf <- BRF |>
+#   filter(Break_Out_Category == "Sex",
+#          Break_Out == "Female",
+#          Response == "Yes")
 
 #head(women_brf)
 
-write.csv(women_brf, "women_brf.csv", row.names = FALSE)
+#write.csv(women_brf, "women_brf.csv", row.names = FALSE)
+
+women_brf <- read.csv("women_brf.csv")
+
 
 ```
 
@@ -192,12 +180,30 @@ write.csv(women_brf, "women_brf.csv", row.names = FALSE)
 
 ## Description
 
+#NHANES
+
+Data is primarily collected through household visits by government personnel. Questionnaires are conducted with those chosen to participate, there is also a mobile examination for the collection of health data. The surveys include continuous data over two year periods. The data files are split out by topic: ie Demographic, BMI, and Reproductive Health, and Physical Activity data files in XPT format. 
+
+Unfortunately, I ended up finding this dataset difficult to work with for several reasons. They had warned on the CDC page that fewer Americans are taking the time to fill out these surveys,but there was a lot more missing data than I anticipated. Additionally, after Covid, they made a large number of changes, and several of the features I wanted to look at did not exist in the 2021-2023 cycle. I had tried for a bit to mutate some of the physical activity data in the 21-23 cycle to make it comparable to plot with the other two cycles. But after a bit I decided it was best to use the sedentary feature which had remained consistent. I had also really wanted to incorporate some spatial graphics, and this data did not include any information about respondent location. 
+
+
+Because of all this, I decided it would be best to find a second dataset to better support the analysis I wanted to complete.
+
+
+#BFSS
+
+The second dataset I selected to work with was the CDC's Behavioral Risk Factor Surveillance System. On the CDC website, I was able to filter for the main features I wanted to look at before downloading: Overall Exercise, Aerobic Exercise, and Strength. After loading the data in I did some additional cleaning to filter for women, as I didn't want to do too much filtering on their site to keep my project reproducable.
+
+
 
 
 
 ## Missing value analysis
 
+In my first pass, I plotted all years together to get a general sense of overarching patterns in the data that is missing.
+
 ```{r}
+
 nhanes_women |>
   summarise(across(everything(), ~ sum(is.na(.)))) |>
   pivot_longer(cols = everything(),
@@ -210,11 +216,14 @@ nhanes_women |>
        x = "Variable",
        y = "Number of Missing Values") +
   theme_minimal(base_size = 12)
+
+
 ```
 
-
+Once I saw that only a handfull of features were missing, I dug into this a bit more to understand the variance across survey cycles:
 
 ```{r}
+
 ggplot(
   nhanes_women |>
     group_by(cycle) |>
@@ -261,7 +270,7 @@ miss_prop <- nhanes_women |>
 
 ```
 
-
+Then I decided to see this as a heatmap to get a better visualization of the spread:
 ```{r}
 
 ggplot(miss_prop,
@@ -284,10 +293,11 @@ ggplot(miss_prop,
 
 
 ```
-```{r}
-library(dplyr)
-library(ggplot2)
-library(tidyr)
+This is when I noticed the extent to which some of the variables I wanted to work with wouldn't be feasible and decided it would be beneficial to bring in a second dataset to support my trend analysis.
+
+
+
+```{r, fig.width= 8}
 
 presence_df <- women_brf %>%
   distinct(Year, Topic) %>%
