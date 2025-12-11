@@ -370,7 +370,7 @@ ggplot(multi_trend, aes(x = Year, y = mean_value, color = Topic)) +
 
 
 ```
-
+Cleveland dot plot
 
 ```{r, fig.width= 8, fig.height= 8}
 
