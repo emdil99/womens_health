@@ -15,6 +15,8 @@ women_brf <- read.csv("women_brf.csv")
 ```
 
 
+I started with some more general graphs to get a sense for the distribution of BMI and age groups of the NHANES survey respondents.
+
 ```{r}
 
 ggplot(nhanes_women, aes(x = age, fill = cycle)) +
@@ -85,6 +87,9 @@ ggplot(nhanes_women, aes(x = bmi)) +
 ```
 
 
+
+I then wanted to see if there was any visual relationship between BMI and the age of respondents. Since there were a large number of data points, I selected a sample of 500 to keep the visual clean while still visually seeing the trend, if any. I also added a loess smoother on top of the graph to aid the visualization.
+
 ```{r}
 
 set.seed(123)  # for reproducibility
@@ -93,9 +98,9 @@ nhanes_women <- read.csv("nhanes_women.csv")
 
 # Clean + sample 100 points per cycle
 nhanes_sampled <- nhanes_women |>
-  filter(!is.na(age), !is.na(bmi), age > 0) |>
+  filter(!is.na(age), !is.na(bmi),!is.na(sedentary_min_day), age > 0) |>
   group_by(cycle) |>
-  slice_sample(n = 100) |>   # randomly pick 100 per cycle
+  slice_sample(n = 500) |>   
   ungroup()
 
 # Plot: BMI vs Age, faceted by cycle
@@ -106,7 +111,7 @@ ggplot(nhanes_sampled, aes(x = age, y = bmi)) +
   labs(
     x = "Age (years)",
     y = "BMI",
-    title = "BMI vs Age Among Women (Random Sample of 100 per NHANES Cycle)"
+    title = "BMI vs Age Among Women (Random Sample of 500 per NHANES Cycle)"
   ) +
   theme_minimal()
 
@@ -135,7 +140,7 @@ ggplot(nhanes_sampled, aes(x = age, y = bmi)) +
 
 ```
 
-
+Next I used a heatmap to get a different visual, this time comparing BMI with sedentary time reported in the NHANES data.
 ```{r}
 ggplot(nhanes_women,
        aes(x = sedentary_min_day,
@@ -184,11 +189,34 @@ ggplot(nhanes_clean, aes(x = age_group, y = sedentary_min_day)) +
 
 ```
 
+I really liked the plot with the loess smoother for BMI across age and was curious to see how the graphs would look for sedentary minutes as well. With this graph we can see the rounding in the responses because the points are plotted across in straight lines for the sedentary minutes. 
+
+```{r}
+
+
+ggplot(nhanes_sampled, aes(x = age, y = sedentary_min_day)) +
+  geom_point(alpha = 0.6, size = 1.8, color = "lightblue3") +
+  geom_smooth(se = FALSE, method = "loess", color = "black") +
+  facet_wrap(~ cycle) +
+  labs(
+    x = "Age (years)",
+    y = "Sedentary Minutes",
+    title = "Sedentary Minutes vs Age (Random Sample of 500 per NHANES Cycle)"
+  ) +
+  theme_minimal()
+
+```
+
+Moving to look at the infertility question in the survey, I was first interested to see just how many respondents reported issues with getting pregnant. So I started with just a bar chart of responses. I was surprised to see a relatively low rate of "Yes" responses. It was really disappointing that the most recent cycle did not include this question on the survey. I feel like in recent years I have seen so much information on rising infertility rates and more women sharing their struggles online so it would have been nice to see if there was an uptick in the 21-23 cycle.
 
 ```{r}
 # Clean + recode infertility response
 nhanes_clean <- nhanes_women |>
-  filter(!is.na(infertility_12mo)) |>
+  filter(
+    !is.na(infertility_12mo),
+    age >= 20,
+    age <= 40
+    ) |>
   mutate(
     infert_status = case_when(
       infertility_12mo == 1 ~ "Yes",
@@ -214,34 +242,22 @@ ggplot(nhanes_clean, aes(x = infert_status, fill = infert_status)) +
     plot.title = element_text(size = 14, face = "bold"),
     strip.text = element_text(size = 12, face = "bold")
   )
+
+
 ```
 
-
+Then I wanted to see how infertility responses looked when plotted against my two other features: sendentary time and BMI to see if there were any visual trends. 
 ```{r}
-nhanes_ridge <- nhanes_women |>
-  filter(
-    !is.na(sedentary_min_day),
-    !is.na(ever_pregnant),
-    age >= 20,
-    age <= 40
-  ) |>
-  mutate(
-    preg_status = case_when(
-      ever_pregnant == 1 ~ "Ever pregnant",
-      ever_pregnant == 2 ~ "Never pregnant",
-      TRUE ~ NA_character_
-    )
-  ) |>
-  filter(!is.na(preg_status))
 
-ggplot(nhanes_ridge, aes(x = sedentary_min_day, y = preg_status, fill = preg_status)) +
+
+ggplot(nhanes_clean, aes(x = sedentary_min_day, y = infert_status, fill = infert_status)) +
   geom_density_ridges(alpha = 0.7, scale = 1.1, rel_min_height = 0.01) +
   facet_wrap(~ cycle) +
   scale_fill_brewer(palette = "Blues") +
   labs(
     x = "Sedentary Minutes per Day",
     y = "",
-    title = "Sedentary Minutes Distribution (Ages 20–40) by Pregnancy History and NHANES Cycle"
+    title = "Sedentary Minutes (Ages 20–40) by Pregnancy History and NHANES Cycle"
   ) +
   theme_minimal() +
   theme(
@@ -274,8 +290,7 @@ ggplot(df, aes(x = infert_status, y = sedentary_min_day, fill = infert_status)) 
 
 
 ```
-
-
+To help link the NHANES data trends to what I wanted to explore using the BRFSS, I plotted the sedentary minutes responses across the years. Here we can see that reported sedentary time has decreased over the last two cycles. Based on this, when I move to explore physical activity levels, I would expect this would correspond to an increase in physical time reported.
 ```{r}
 
 
@@ -300,7 +315,7 @@ ggplot(nhanes_summary, aes(x = cycle, y = median_sedentary, group = 1)) +
   theme_minimal()
 
 ```
-
+Officially moving to work with the BRFSS dataset. My main goal with this was to supplement my analysis of physical activity trends for my original research question.
 
 ```{r}
 strength_trend <- women_brf |>
@@ -344,7 +359,7 @@ ggplot(multi_trend, aes(x = Year, y = mean_value, color = Topic)) +
   labs(
     title = "Women's Physical Activity Trends (2011–2023)",
     x = "Year",
-    y = "% of Women Meeting Guideline or Responding 'Yes'",
+    y = "% of Women Responding 'Yes'",
     color = "Activity Type"
   ) +
   theme_minimal(base_size = 14) +
@@ -387,23 +402,30 @@ ggplot(df_year, aes(x = value, y = Locationdesc, color = Topic)) +
 
 
 ```
-
+Finally, I really wanted to look at this spatially to see if certain areas of the country were driving trends more than others. I chose to do this across the starting and ending range of my data to also visualize how the increase in activity level was spread across the country.
 
 ```{r}
+
+
+#realized I needed to freeze the color scales so graphs would be comparable
+min_val <- min(c(women_pa_13$pct_yes, women_pa_23$pct_yes), na.rm = TRUE)
+max_val <- max(c(women_pa_13$pct_yes, women_pa_23$pct_yes), na.rm = TRUE)
+
+
 
 
 
 women_pa_13 <- women_brf |>
   filter(
-    Year == 2013,                       
-    Break_Out_Category == "Sex",
-    Break_Out == "Female",
+    Year == 2013, 
+    Topic == "Physical Activity Index",
     Response == "Yes"
   ) |>
   transmute(
     state_abbr = Locationabbr,    
     pct_yes    = as.numeric(Data_value)
   )
+  
 
 
 #states_sf <- states(cb = TRUE)
@@ -417,7 +439,10 @@ states_joined_13 <- states_sf |>
 
 ggplot(states_joined_13) +
   geom_sf(aes(fill = pct_yes), color = "white", size = 0.2) +
-  scale_fill_viridis_c(option = "plasma", name = "% Yes") +
+  scale_fill_viridis_c(
+  option = "mako",
+  name = "% Yes",
+  limits = c(min_val, max_val)) +
   coord_sf(
     xlim = c(-125, -66),   # zoom to US
     ylim = c(24, 50),
@@ -434,13 +459,13 @@ ggplot(states_joined_13) +
 ```
 
 
+
 ```{r}
 
 women_pa_23 <- women_brf |>
   filter(
-    Year == 2023,                       
-    Break_Out_Category == "Sex",
-    Break_Out == "Female",
+    Year == 2023, 
+    Topic == "Physical Activity Index",
     Response == "Yes"
   ) |>
   transmute(
@@ -455,7 +480,10 @@ states_joined_23 <- states_sf |>
 
 ggplot(states_joined_23) +
   geom_sf(aes(fill = pct_yes), color = "white", size = 0.2) +
-  scale_fill_viridis_c(option = "plasma", name = "% Yes") +
+  scale_fill_viridis_c(
+  option = "mako",
+  name = "% Yes",
+  limits = c(min_val, max_val)) +
   coord_sf(
     xlim = c(-125, -66),   # zoom to US
     ylim = c(24, 50),
