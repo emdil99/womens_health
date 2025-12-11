@@ -407,13 +407,6 @@ Finally, I really wanted to look at this spatially to see if certain areas of th
 ```{r}
 
 
-#realized I needed to freeze the color scales so graphs would be comparable
-min_val <- min(c(women_pa_13$pct_yes, women_pa_23$pct_yes), na.rm = TRUE)
-max_val <- max(c(women_pa_13$pct_yes, women_pa_23$pct_yes), na.rm = TRUE)
-
-
-
-
 
 women_pa_13 <- women_brf |>
   filter(
@@ -425,7 +418,23 @@ women_pa_13 <- women_brf |>
     state_abbr = Locationabbr,    
     pct_yes    = as.numeric(Data_value)
   )
-  
+
+
+women_pa_23 <- women_brf |>
+  filter(
+    Year == 2023, 
+    Topic == "Physical Activity Index",
+    Response == "Yes"
+  ) |>
+  transmute(
+    state_abbr = Locationabbr,    
+    pct_yes    = as.numeric(Data_value)
+  )
+
+#realized I needed to freeze the color scales so graphs would be comparable
+min_val <- min(c(women_pa_13$pct_yes, women_pa_23$pct_yes), na.rm = TRUE)
+max_val <- max(c(women_pa_13$pct_yes, women_pa_23$pct_yes), na.rm = TRUE)
+
 
 
 #states_sf <- states(cb = TRUE)
@@ -462,16 +471,7 @@ ggplot(states_joined_13) +
 
 ```{r}
 
-women_pa_23 <- women_brf |>
-  filter(
-    Year == 2023, 
-    Topic == "Physical Activity Index",
-    Response == "Yes"
-  ) |>
-  transmute(
-    state_abbr = Locationabbr,    
-    pct_yes    = as.numeric(Data_value)
-  )
+
 
 
 
