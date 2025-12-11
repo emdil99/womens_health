@@ -15,7 +15,7 @@ women_brf <- read.csv("women_brf.csv")
 ```
 
 
-I started with some more general graphs to get a sense for the distribution of BMI and age groups of the NHANES survey respondents.
+I started with some more general graphs to get a sense for the distribution of BMI and age groups of the NHANES survey respondents. I was very surprised by the wide range of respondents. I didn't grasp at first the breadth of the survey. I thought this survey was more to guage the adult population but seeing they even conducted portions with infants also helps explain why there is so much missing data, because many questions won't be applicable to certain portions of the population included.
 
 ```{r}
 
@@ -53,9 +53,17 @@ ggplot(nhanes_women, aes(x = age, fill = cycle)) +
 
 ```
 
-
+After seeing the age distribution and knowing that I wanted to focus my trend analysis on the adult women respondents, I filtered my data for ages 20-50 and plotted the distribution for BMI from there. BMI has slightly increased over the three survey cycles, which I didn't find completely surprising but it also didn't quite line up with what I would have expected given the trends I saw in my later analysis.
 ```{r}
-ggplot(nhanes_women, aes(x = bmi, fill = cycle)) +
+
+nhanes_adultw <- nhanes_women |>
+  filter(
+    age >= 20,
+    age <= 50
+    )
+
+
+ggplot(nhanes_adultw, aes(x = bmi, fill = cycle)) +
   geom_density(alpha = 0.4) +
   labs(
     title = "BMI Distribution of Women by NHANES Cycle",
@@ -66,39 +74,53 @@ ggplot(nhanes_women, aes(x = bmi, fill = cycle)) +
 
 ```
 
-
+However, when we break out BMI by age group, we actually see that it stays relatively stable across each group. But as women age we see slightly higher BMI and more variability in respondents.
 ```{r}
 
-ggplot(nhanes_women, aes(x = bmi)) +
-  geom_histogram(
-    color    = "blue",
-    fill     = "lightblue",
-    binwidth = 2,
-    boundary = 0
-  ) +
-  facet_wrap(~ cycle, ncol = 1) +
+nhanes_agegroups <- nhanes_adultw |>
+  filter(
+    !is.na(age),
+    age >= 20, age <= 50,
+    !is.na(sedentary_min_day),
+    !is.na(bmi)
+  ) |>
+  mutate(
+    age_group = case_when(
+      age <= 30 ~ "20–30",
+      age <= 40 ~ "31–40",
+      TRUE      ~ "41–50"      
+    )
+  )
+
+
+ggplot(nhanes_agegroups, aes(x = age_group, y = bmi)) +
+  geom_boxplot(fill = "#d3e5ff", alpha = 0.8, outlier.alpha = 0.5) +
+  facet_wrap(~ cycle) +
   labs(
-    title = "BMI Histogram by NHANES Cycle (Women Only)",
-    x     = "BMI",
-    y     = "Count"
+    x = "Age Group",
+    y = "BMI",
+    title = "BMI Across Age Groups and NHANES Cycles (Women)"
   ) +
-  theme_minimal(base_size = 13)
+  theme_minimal() +
+  theme(
+    plot.title  = element_text(size = 14, face = "bold"),
+    axis.text   = element_text(size = 11),
+    strip.text  = element_text(size = 11, face = "bold")
+  )
+
 
 ```
 
 
 
-I then wanted to see if there was any visual relationship between BMI and the age of respondents. Since there were a large number of data points, I selected a sample of 500 to keep the visual clean while still visually seeing the trend, if any. I also added a loess smoother on top of the graph to aid the visualization.
+I wanted to see what this relationship looked like if I expanded the age group back to the original group of respondents. Since there were a large number of data points, I selected a sample of 500 to keep the visual clean while still visually seeing the trend. I also added a loess smoother on top of the graph to aid the visualization. Not surprisingly, we see bmi increase through childhood to adulthood, a slight uptick from 30-50 as seen in the boxplots, then bmi drops off again as women pass the age of 60.
 
 ```{r}
 
 set.seed(123)  # for reproducibility
 
-nhanes_women <- read.csv("nhanes_women.csv")
-
 # Clean + sample 100 points per cycle
-nhanes_sampled <- nhanes_women |>
-  filter(!is.na(age), !is.na(bmi),!is.na(sedentary_min_day), age > 0) |>
+nhanes_sampled <- nhanes_agegroups |>
   group_by(cycle) |>
   slice_sample(n = 500) |>   
   ungroup()
@@ -140,9 +162,10 @@ ggplot(nhanes_sampled, aes(x = age, y = bmi)) +
 
 ```
 
-Next I used a heatmap to get a different visual, this time comparing BMI with sedentary time reported in the NHANES data.
+Next I moved to look at trends in the reported number of sedentary minutes. I first used a heatmap to get a different type of visual. But also created the bar plot across age groups as well. The densist portion of the plot being around 8.5 hours is what I would have expected for adult women, since the majority probably spend 8-9 hours a day working. I would be curious to see how these numbers change if plotted using the original full age group data, since for the age groups I plotted the median stays relatively the same. 
+
 ```{r}
-ggplot(nhanes_women,
+ggplot(nhanes_agegroups,
        aes(x = sedentary_min_day,
            y = bmi)) +
   geom_bin2d() +
@@ -161,25 +184,17 @@ ggplot(nhanes_women,
 
 ```{r}
 
-nhanes_clean <- nhanes_women |>
-  filter(!is.na(age), !is.na(sedentary_min_day), age > 0) |>
-  mutate(
-    age_group = case_when(
-      age < 20 ~ "0–19",
-      age < 40 ~ "20–39",
-      age < 60 ~ "40–59",
-      TRUE     ~ "60+"
-    )
-  )
+
 
 # Boxplot of sedentary minutes by age group
-ggplot(nhanes_clean, aes(x = age_group, y = sedentary_min_day)) +
+ggplot(nhanes_agegroups, aes(x = age_group, y = sedentary_min_day)) +
   geom_boxplot(fill = "#d3e5ff", alpha = 0.8, outlier.alpha = 0.5) +
   labs(
     x = "Age Group",
     y = "Sedentary Minutes per Day",
     title = "Sedentary Behavior Across Age Groups in Women (NHANES)"
   ) +
+  facet_wrap(~ cycle) +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
@@ -211,7 +226,7 @@ Moving to look at the infertility question in the survey, I was first interested
 
 ```{r}
 # Clean + recode infertility response
-nhanes_clean <- nhanes_women |>
+nhanes_fertility <- nhanes_women |>
   filter(
     !is.na(infertility_12mo),
     age >= 20,
@@ -227,7 +242,7 @@ nhanes_clean <- nhanes_women |>
   filter(!is.na(infert_status))
 
 # Faceted bar plot
-ggplot(nhanes_clean, aes(x = infert_status, fill = infert_status)) +
+ggplot(nhanes_fertility, aes(x = infert_status, fill = infert_status)) +
   geom_bar(alpha = 0.85) +
   facet_wrap(~ cycle) +
   scale_fill_manual(values = c("Yes" = "lightblue2", "No" = "#d3e5ff")) +
@@ -250,7 +265,7 @@ Then I wanted to see how infertility responses looked when plotted against my tw
 ```{r}
 
 
-ggplot(nhanes_clean, aes(x = sedentary_min_day, y = infert_status, fill = infert_status)) +
+ggplot(nhanes_fertility, aes(x = sedentary_min_day, y = infert_status, fill = infert_status)) +
   geom_density_ridges(alpha = 0.7, scale = 1.1, rel_min_height = 0.01) +
   facet_wrap(~ cycle) +
   scale_fill_brewer(palette = "Blues") +
@@ -266,25 +281,19 @@ ggplot(nhanes_clean, aes(x = sedentary_min_day, y = infert_status, fill = infert
   )
 ```
 
-
+Trying out a violin plot.
 ```{r}
-# Clean + recode infertility variable
-df <- nhanes_women |>
-  filter(!is.na(infertility_12mo),
-         !is.na(sedentary_min_day)) |>
-  mutate(
-    infert_status = case_when(
-      infertility_12mo == 1 ~ "Yes",
-      infertility_12mo == 2 ~ "No",
-      TRUE ~ NA_character_
-    )
-  ) |>
-  filter(!is.na(infert_status))
 
-ggplot(df, aes(x = infert_status, y = sedentary_min_day, fill = infert_status)) +
+
+ggplot(nhanes_fertility, aes(x = infert_status, y = sedentary_min_day, fill = infert_status)) +
   geom_violin(alpha = 0.5) +
   geom_boxplot(width = 0.15, alpha = 0.8, outlier.alpha = 0.3) +
   scale_fill_manual(values = c("Yes" = "lightblue2", "No" = "#d3e5ff")) +
+  labs(
+    x = "Infertility Status",
+    y = "Sedentary Minutes per Day",
+    title = "Sedentary Minutes (Ages 20–40) by Pregnancy History and NHANES Cycle"
+  ) +
   theme_minimal()
 
 
@@ -295,7 +304,7 @@ To help link the NHANES data trends to what I wanted to explore using the BRFSS,
 
 
 
-nhanes_summary <- nhanes_women |>
+nhanes_summary <- nhanes_agegroups |>
   filter(!is.na(sedentary_min_day)) |>
   group_by(cycle) |>
   summarise(
@@ -315,7 +324,7 @@ ggplot(nhanes_summary, aes(x = cycle, y = median_sedentary, group = 1)) +
   theme_minimal()
 
 ```
-Officially moving to work with the BRFSS dataset. My main goal with this was to supplement my analysis of physical activity trends for my original research question.
+Moving to work with the BRFSS dataset, my main goal with this was to supplement my analysis of physical activity trends for my original research question. First, I plotted 
 
 ```{r}
 strength_trend <- women_brf |>
