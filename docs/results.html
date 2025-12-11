@@ -381,7 +381,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#   theme_minimal(base_size = 13)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Next I used a heatmap to get a different visual, this time comparing BMI with sedentary time reported in the NHANES data.</p>
+<p>Next I moved to look at trends in the reported number of sedentary minutes. I first used a heatmap to get a different type of visual. But also created the bar plot across age groups as well. The densist portion of the plot being around 8.5 hours is what I would have expected for adult women, since the majority probably spend 8-9 hours a day working. I would be curious to see how these numbers change if plotted using the original full age group data, since for the age groups I plotted the median stays relatively the same.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -528,6 +528,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>Trying out a violin plot.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -535,7 +536,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">outlier.alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Yes"</span> <span class="ot">=</span> <span class="st">"lightblue2"</span>, <span class="st">"No"</span> <span class="ot">=</span> <span class="st">"#d3e5ff"</span>)) <span class="sc">+</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Infertility Status"</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Sedentary Minutes per Day"</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sedentary Minutes (Ages 20–40) by Pregnancy History and NHANES Cycle"</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -576,7 +582,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Officially moving to work with the BRFSS dataset. My main goal with this was to supplement my analysis of physical activity trends for my original research question.</p>
+<p>Moving to work with the BRFSS dataset, my main goal with this was to supplement my analysis of physical activity trends for my original research question. First, I plotted strength training to have a comparison against the previous sedentary time. During the same time that sedentary time has decreased, reported strength training activity has increased.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -605,6 +611,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>This dataset targeted two forms of exercise: aerobic and strength, and also had a broader questions regarding meeting professional guidelines on exercise. I was thinking that maybe aerobic would decline when strength training began to increase, but all three lines trend in parallel.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -638,7 +645,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Cleveland dot plot</p>
+<p>I thought a cleveland dot plot would be a perfect candidate for showcasing the difference between aerobic and strength data. While I did not plot PR on the next graph, here it stands out as an outlier for lower activity levels. We also see Colorado and DC at the higher end. One that surprised me was California, which I thought would be the highest since it is known for great weather and a very active/outdoorsy population.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -740,6 +747,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>I was surprised to see two states missing here but double checked the data file as well.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
