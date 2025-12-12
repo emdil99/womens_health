@@ -291,7 +291,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>However, when we break out BMI by age group, we actually see that it stays relatively stable across each group. But as women age we see slightly higher BMI and more variability in respondents.</p>
+<p>However, when we break out BMI by age group, we actually see that it stays relatively stable for each age group across the three survey cycles. But as women age we see slightly higher BMI and more variability in respondents.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -684,7 +684,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Finally, I really wanted to look at this spatially to see if certain areas of the country were driving trends more than others. I chose to do this across the starting and ending range of my data to also visualize how the increase in activity level was spread across the country.</p>
+<p>Finally, I really wanted to look at this spatially to see if certain areas of the country were driving trends more than others. I chose to do this at the starting and ending range of my data to also visualize how the increase in activity level was spread across the country.</p>
+<p>In 2013 we see that more active states are located in the western half of the country, while the south tend to be less active.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -738,7 +739,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="cn">FALSE</span></span>
 <span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Women Meeting Physical Activity Guidelines by State"</span>,</span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Women Meeting Physical Activity Guidelines by State 2013"</span>,</span>
 <span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"CDC BRFSS"</span>,</span>
 <span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"% Yes"</span></span>
 <span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
@@ -752,7 +753,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>I was surprised to see two states missing here but double checked the data file as well.</p>
+<p>In 2023, we still see that some of the southern states remain darker than the rest. However, Texas in particular has gotten much lighter, even looking to surpass California for activity levels. I was also surprised to see two states missing here but double checked the data file as well and they were not reported.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -771,7 +772,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="cn">FALSE</span></span>
 <span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Women Meeting Physical Activity Guidelines by State"</span>,</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Women Meeting Physical Activity Guidelines by State 2023"</span>,</span>
 <span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"CDC BRFSS"</span>,</span>
 <span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"% Yes"</span></span>
 <span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
