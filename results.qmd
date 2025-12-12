@@ -13,7 +13,7 @@ nhanes_women <- read.csv("nhanes_women.csv")
 women_brf <- read.csv("women_brf.csv")
 
 ```
-
+##Data Exploration
 
 I started with some more general graphs to get a sense for the distribution of BMI and age groups of the NHANES survey respondents. I was very surprised by the wide range of respondents. I didn't grasp at first the breadth of the survey. I thought this survey was more to guage the adult population but seeing they even conducted portions with infants also helps explain why there is so much missing data, because many questions won't be applicable to certain portions of the population included.
 
@@ -52,6 +52,7 @@ ggplot(nhanes_women, aes(x = age, fill = cycle)) +
 
 
 ```
+##BMI
 
 After seeing the age distribution and knowing that I wanted to focus my trend analysis on the adult women respondents, I filtered my data for ages 20-50 and plotted the distribution for BMI from there. BMI has slightly increased over the three survey cycles, which I didn't find completely surprising but it also didn't quite line up with what I would have expected given the trends I saw in my later analysis.
 ```{r}
@@ -74,7 +75,7 @@ ggplot(nhanes_adultw, aes(x = bmi, fill = cycle)) +
 
 ```
 
-However, when we break out BMI by age group, we actually see that it stays relatively stable across each group. But as women age we see slightly higher BMI and more variability in respondents.
+However, when we break out BMI by age group, we actually see that it stays relatively stable for each age group across the three survey cycles. But as women age we see slightly higher BMI and more variability in respondents.
 ```{r}
 
 nhanes_agegroups <- nhanes_adultw |>
@@ -162,6 +163,9 @@ ggplot(nhanes_sampled, aes(x = age, y = bmi)) +
 
 ```
 
+
+##Sedentary Time
+
 Next I moved to look at trends in the reported number of sedentary minutes. I first used a heatmap to get a different type of visual. But also created the bar plot across age groups as well. The densist portion of the plot being around 8.5 hours is what I would have expected for adult women, since the majority probably spend 8-9 hours a day working. I would be curious to see how these numbers change if plotted using the original full age group data, since for the age groups I plotted the median stays relatively the same. 
 
 ```{r}
@@ -221,6 +225,7 @@ ggplot(nhanes_sampled, aes(x = age, y = sedentary_min_day)) +
   theme_minimal()
 
 ```
+##Fertility
 
 Moving to look at the infertility question in the survey, I was first interested to see just how many respondents reported issues with getting pregnant. So I started with just a bar chart of responses. I was surprised to see a relatively low rate of "Yes" responses. It was really disappointing that the most recent cycle did not include this question on the survey. I feel like in recent years I have seen so much information on rising infertility rates and more women sharing their struggles online so it would have been nice to see if there was an uptick in the 21-23 cycle.
 
@@ -299,6 +304,9 @@ ggplot(nhanes_fertility, aes(x = infert_status, y = sedentary_min_day, fill = in
 
 
 ```
+
+##Physical Activity Trends
+
 To help link the NHANES data trends to what I wanted to explore using the BRFSS, I plotted the sedentary minutes responses across the years. Here we can see that reported sedentary time has decreased over the last two cycles. Based on this, when I move to explore physical activity levels, I would expect this would correspond to an increase in physical time reported.
 ```{r}
 
@@ -411,7 +419,9 @@ ggplot(df_year, aes(x = value, y = Locationdesc, color = Topic)) +
 
 
 ```
-Finally, I really wanted to look at this spatially to see if certain areas of the country were driving trends more than others. I chose to do this across the starting and ending range of my data to also visualize how the increase in activity level was spread across the country.
+Finally, I really wanted to look at this spatially to see if certain areas of the country were driving trends more than others. I chose to do this at the starting and ending range of my data to also visualize how the increase in activity level was spread across the country.
+
+In 2013 we see that more active states are located in the western half of the country, while the south tend to be less active. 
 
 ```{r}
 
@@ -467,7 +477,7 @@ ggplot(states_joined_13) +
     expand = FALSE
   ) +
   labs(
-    title = "Women Meeting Physical Activity Guidelines by State",
+    title = "Women Meeting Physical Activity Guidelines by State 2013",
     subtitle = "CDC BRFSS",
     fill = "% Yes"
   ) +
@@ -477,7 +487,7 @@ ggplot(states_joined_13) +
 ```
 
 
-I was surprised to see two states missing here but double checked the data file as well.
+In 2023, we still see that some of the southern states remain darker than the rest. However, Texas in particular has gotten much lighter, even looking to surpass California for activity levels. I was also surprised to see two states missing here but double checked the data file as well and they were not reported. 
 ```{r}
 
 
@@ -497,7 +507,7 @@ ggplot(states_joined_23) +
     expand = FALSE
   ) +
   labs(
-    title = "Women Meeting Physical Activity Guidelines by State",
+    title = "Women Meeting Physical Activity Guidelines by State 2023",
     subtitle = "CDC BRFSS",
     fill = "% Yes"
   ) +

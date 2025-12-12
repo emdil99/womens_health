@@ -213,6 +213,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>women_brf <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"women_brf.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<p>##Data Exploration</p>
 <p>I started with some more general graphs to get a sense for the distribution of BMI and age groups of the NHANES survey respondents. I was very surprised by the wide range of respondents. I didn’t grasp at first the breadth of the survey. I thought this survey was more to guage the adult population but seeing they even conducted portions with infants also helps explain why there is so much missing data, because many questions won’t be applicable to certain portions of the population included.</p>
 <div class="cell">
 <details class="code-fold">
@@ -261,6 +262,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>##BMI</p>
 <p>After seeing the age distribution and knowing that I wanted to focus my trend analysis on the adult women respondents, I filtered my data for ages 20-50 and plotted the distribution for BMI from there. BMI has slightly increased over the three survey cycles, which I didn’t find completely surprising but it also didn’t quite line up with what I would have expected given the trends I saw in my later analysis.</p>
 <div class="cell">
 <details class="code-fold">
@@ -381,6 +383,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#   theme_minimal(base_size = 13)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<p>##Sedentary Time</p>
 <p>Next I moved to look at trends in the reported number of sedentary minutes. I first used a heatmap to get a different type of visual. But also created the bar plot across age groups as well. The densist portion of the plot being around 8.5 hours is what I would have expected for adult women, since the majority probably spend 8-9 hours a day working. I would be curious to see how these numbers change if plotted using the original full age group data, since for the age groups I plotted the median stays relatively the same.</p>
 <div class="cell">
 <details class="code-fold">
@@ -456,6 +459,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>##Fertility</p>
 <p>Moving to look at the infertility question in the survey, I was first interested to see just how many respondents reported issues with getting pregnant. So I started with just a bar chart of responses. I was surprised to see a relatively low rate of “Yes” responses. It was really disappointing that the most recent cycle did not include this question on the survey. I feel like in recent years I have seen so much information on rising infertility rates and more women sharing their struggles online so it would have been nice to see if there was an uptick in the 21-23 cycle.</p>
 <div class="cell">
 <details class="code-fold">
@@ -551,6 +555,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>##Physical Activity Trends</p>
 <p>To help link the NHANES data trends to what I wanted to explore using the BRFSS, I plotted the sedentary minutes responses across the years. Here we can see that reported sedentary time has decreased over the last two cycles. Based on this, when I move to explore physical activity levels, I would expect this would correspond to an increase in physical time reported.</p>
 <div class="cell">
 <details class="code-fold">
@@ -645,7 +650,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>I thought a cleveland dot plot would be a perfect candidate for showcasing the difference between aerobic and strength data. While I did not plot PR on the next graph, here it stands out as an outlier for lower activity levels. We also see Colorado and DC at the higher end. One that surprised me was California, which I thought would be the highest since it is known for great weather and a very active/outdoorsy population.</p>
+<p>I thought a Cleveland dot plot would be a perfect candidate for showcasing the difference between aerobic and strength data. While I did not plot PR on the next graph, here it stands out as an outlier for lower activity levels. We also see Colorado and DC at the higher end. One that surprised me was California, which I thought would be the highest since it is known for great weather and a very active/outdoorsy population.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
