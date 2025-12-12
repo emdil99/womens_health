@@ -190,7 +190,7 @@ Unfortunately, I ended up finding this dataset difficult to work with for severa
 Because of the issues I ran into, I decided to find a second dataset to better support the analysis I wanted to complete.
 
 
-## BFSS
+## BRFSS
 
 The second dataset I selected to work with was the CDC's Behavioral Risk Factor Surveillance System. On the CDC website, I was able to filter for the main features I wanted to look at before downloading the csv. The features I selected for were Physical Activity Index (whether or not indiviudals meet excerise time guidelines), Aerobic Exercise, and Strength Training. After loading the data in I did some additional cleaning to filter for women and age groups, as I didn't want to do too much filtering on their site to keep my project reproducible. This dataset was a bit cleaner and easier to work with because each row in this dataset is a pre calculated summary statistic. It also included information on which State the data came from so I was able to include some spatial analysis.
 

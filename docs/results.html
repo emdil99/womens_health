@@ -174,8 +174,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#initial-look-at-the-survey-population" id="toc-initial-look-at-the-survey-population" class="nav-link active" data-scroll-target="#initial-look-at-the-survey-population"><span class="header-section-number">3.1</span> Initial Look at the Survey Population</a></li>
+  <li><a href="#bmi-trends" id="toc-bmi-trends" class="nav-link" data-scroll-target="#bmi-trends"><span class="header-section-number">3.2</span> BMI Trends</a></li>
+  <li><a href="#reported-sedentary-time" id="toc-reported-sedentary-time" class="nav-link" data-scroll-target="#reported-sedentary-time"><span class="header-section-number">3.3</span> Reported Sedentary Time</a></li>
+  <li><a href="#trends-in-reported-fertility-issues" id="toc-trends-in-reported-fertility-issues" class="nav-link" data-scroll-target="#trends-in-reported-fertility-issues"><span class="header-section-number">3.4</span> Trends in Reported Fertility Issues</a></li>
+  <li><a href="#physical-activity-trends" id="toc-physical-activity-trends" class="nav-link" data-scroll-target="#physical-activity-trends"><span class="header-section-number">3.5</span> Physical Activity Trends</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/emdil99/womens_health/edit/main/results.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/emdil99/womens_health/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -213,7 +223,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>women_brf <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"women_brf.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>##Data Exploration</p>
+<section id="initial-look-at-the-survey-population" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="initial-look-at-the-survey-population"><span class="header-section-number">3.1</span> Initial Look at the Survey Population</h2>
 <p>I started with some more general graphs to get a sense for the distribution of BMI and age groups of the NHANES survey respondents. I was very surprised by the wide range of respondents. I didn’t grasp at first the breadth of the survey. I thought this survey was more to guage the adult population but seeing they even conducted portions with infants also helps explain why there is so much missing data, because many questions won’t be applicable to certain portions of the population included.</p>
 <div class="cell">
 <details class="code-fold">
@@ -262,7 +273,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>##BMI</p>
+</section>
+<section id="bmi-trends" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="bmi-trends"><span class="header-section-number">3.2</span> BMI Trends</h2>
 <p>After seeing the age distribution and knowing that I wanted to focus my trend analysis on the adult women respondents, I filtered my data for ages 20-50 and plotted the distribution for BMI from there. BMI has slightly increased over the three survey cycles, which I didn’t find completely surprising but it also didn’t quite line up with what I would have expected given the trends I saw in my later analysis.</p>
 <div class="cell">
 <details class="code-fold">
@@ -383,7 +396,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#   theme_minimal(base_size = 13)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>##Sedentary Time</p>
+</section>
+<section id="reported-sedentary-time" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="reported-sedentary-time"><span class="header-section-number">3.3</span> Reported Sedentary Time</h2>
 <p>Next I moved to look at trends in the reported number of sedentary minutes. I first used a heatmap to get a different type of visual. But also created the bar plot across age groups as well. The densist portion of the plot being around 8.5 hours is what I would have expected for adult women, since the majority probably spend 8-9 hours a day working. I would be curious to see how these numbers change if plotted using the original full age group data, since for the age groups I plotted the median stays relatively the same.</p>
 <div class="cell">
 <details class="code-fold">
@@ -459,7 +474,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>##Fertility</p>
+</section>
+<section id="trends-in-reported-fertility-issues" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="trends-in-reported-fertility-issues"><span class="header-section-number">3.4</span> Trends in Reported Fertility Issues</h2>
 <p>Moving to look at the infertility question in the survey, I was first interested to see just how many respondents reported issues with getting pregnant. So I started with just a bar chart of responses. I was surprised to see a relatively low rate of “Yes” responses. It was really disappointing that the most recent cycle did not include this question on the survey. I feel like in recent years I have seen so much information on rising infertility rates and more women sharing their struggles online so it would have been nice to see if there was an uptick in the 21-23 cycle.</p>
 <div class="cell">
 <details class="code-fold">
@@ -555,7 +572,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>##Physical Activity Trends</p>
+</section>
+<section id="physical-activity-trends" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="physical-activity-trends"><span class="header-section-number">3.5</span> Physical Activity Trends</h2>
 <p>To help link the NHANES data trends to what I wanted to explore using the BRFSS, I plotted the sedentary minutes responses across the years. Here we can see that reported sedentary time has decreased over the last two cycles. Based on this, when I move to explore physical activity levels, I would expect this would correspond to an increase in physical time reported.</p>
 <div class="cell">
 <details class="code-fold">
@@ -788,6 +807,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1209,7 +1229,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/emdil99/womens_health/edit/main/results.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/emdil99/womens_health/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/emdil99/womens_health/edit/main/results.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/emdil99/womens_health/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>

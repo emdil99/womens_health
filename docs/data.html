@@ -181,7 +181,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#description" id="toc-description" class="nav-link active" data-scroll-target="#description"><span class="header-section-number">2.1</span> Description</a></li>
   <li><a href="#nhanes" id="toc-nhanes" class="nav-link" data-scroll-target="#nhanes"><span class="header-section-number">2.2</span> NHANES</a></li>
-  <li><a href="#bfss" id="toc-bfss" class="nav-link" data-scroll-target="#bfss"><span class="header-section-number">2.3</span> BFSS</a></li>
+  <li><a href="#brfss" id="toc-brfss" class="nav-link" data-scroll-target="#brfss"><span class="header-section-number">2.3</span> BRFSS</a></li>
   <li><a href="#missing-value-analysis" id="toc-missing-value-analysis" class="nav-link" data-scroll-target="#missing-value-analysis"><span class="header-section-number">2.4</span> Missing value analysis</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/emdil99/womens_health/edit/main/data.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/emdil99/womens_health/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -386,8 +386,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Unfortunately, I ended up finding this dataset difficult to work with for several reasons. They had warned on the CDC page that fewer Americans are taking the time to fill out these surveys,but there was a lot more missing data than I anticipated. Additionally, after Covid, they made a large number of changes, and several of the features I wanted to look at did not exist in the 2021-2023 cycle. I had tried for a bit to mutate some of the physical activity data in the 21-23 cycle to make it comparable to plot with the other two cycles. But after a bit of time wrestling with this, I decided it was best to use the sedentary feature which had remained consistent. I had also really wanted to incorporate some spatial graphics, and this data did not include any information about respondent location.</p>
 <p>Because of the issues I ran into, I decided to find a second dataset to better support the analysis I wanted to complete.</p>
 </section>
-<section id="bfss" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="bfss"><span class="header-section-number">2.3</span> BFSS</h2>
+<section id="brfss" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="brfss"><span class="header-section-number">2.3</span> BRFSS</h2>
 <p>The second dataset I selected to work with was the CDC’s Behavioral Risk Factor Surveillance System. On the CDC website, I was able to filter for the main features I wanted to look at before downloading the csv. The features I selected for were Physical Activity Index (whether or not indiviudals meet excerise time guidelines), Aerobic Exercise, and Strength Training. After loading the data in I did some additional cleaning to filter for women and age groups, as I didn’t want to do too much filtering on their site to keep my project reproducible. This dataset was a bit cleaner and easier to work with because each row in this dataset is a pre calculated summary statistic. It also included information on which State the data came from so I was able to include some spatial analysis.</p>
 </section>
 <section id="missing-value-analysis" class="level2" data-number="2.4">
@@ -502,8 +502,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>presence_df <span class="ot">&lt;-</span> women_brf <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(Year, Topic) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>presence_df <span class="ot">&lt;-</span> women_brf <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(Year, Topic) <span class="sc">|&gt;</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">present =</span> <span class="dv">1</span>)</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create full grid of all Year × Topic combinations</span></span>
@@ -512,8 +512,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Topic =</span> <span class="fu">unique</span>(women_brf<span class="sc">$</span>Topic)</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>presence_matrix <span class="ot">&lt;-</span> full_grid <span class="sc">%&gt;%</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(presence_df, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Topic"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>presence_matrix <span class="ot">&lt;-</span> full_grid <span class="sc">|&gt;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(presence_df, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Topic"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">present =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(present), <span class="dv">0</span>, present))</span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(presence_matrix, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Topic, <span class="at">fill =</span> <span class="fu">factor</span>(present))) <span class="sc">+</span></span>
